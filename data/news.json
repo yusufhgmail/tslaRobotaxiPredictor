@@ -1,20 +1,29 @@
 [
   {
-    "date": "2026-04-23",
-    "title": "Cybercab production targets begin at Giga Texas later in 2026",
+    "date": "2026-04-22",
+    "title": "Tesla Plans to Double Austin Robotaxi Fleet to ~60 by December",
+    "url": "https://www.notateslaapp.com/news/3367/tesla-to-double-austin-robotaxi-fleet-but-will-it-meet-its-2025-target",
+    "summary": "Elon Musk announced plans to double the Austin Robotaxi fleet from 29-30 current vehicles to about 60 next month, far short of the prior 500-vehicle end-2025 target. All current Austin rides remain supervised with safety drivers.",
+    "impact_score": 0,
+    "impact_reason": "Promises fleet growth but remains supervised and well below targets, resulting in neutral net effect on unsupervised scaling velocity in Austin.",
+    "captured_at": "2026-04-23T13:36:27+00:00"
+  },
+  {
+    "date": "2026-04-21",
+    "title": "Austin Unsupervised Robotaxi Fleet at 13 Active Vehicles",
     "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
-    "summary": "Tesla plans to begin volume production of the Cybercab\u2014a purpose-built autonomous vehicle with no steering wheel or pedals\u2014at Giga Texas later in 2026. This hardware milestone is essential for eliminating cost and safety-monitor constraints limiting Austin fleet scaling.",
+    "summary": "Robotaxi Tracker reports 13 unsupervised vehicles active in Austin's geofence over the last 30 days as of April 20.",
     "impact_score": 1,
-    "impact_reason": "Mildly positive\u2014Cybercab production removal of steering wheel/pedals will unlock supervised-to-unsupervised transition at scale, directly addressing the operational bottleneck currently capping Austin growth at ~60 vehicles; timing uncertainty limits impact to near-term Austin scaling.",
+    "impact_reason": "Indicates steady low-scale unsupervised operations in Austin, maintaining baseline fleet presence without rapid growth.",
     "captured_at": "2026-04-23T11:29:02+00:00"
   },
   {
     "date": "2026-04-18",
-    "title": "Tesla launches unsupervised Robotaxi service in Dallas and Houston",
+    "title": "Tesla Expands Unsupervised Robotaxi to Dallas and Houston",
     "url": "https://www.teslarati.com/tesla-expands-unsupervised-robotaxi-service-two-new-cities/",
-    "summary": "Tesla announced rollout of unsupervised Robotaxi service in Dallas and Houston on April 18, expanding its Texas operations to three active cities with geofenced service areas. The expansion aligns with Q4 2025 guidance for seven-city H1 2026 rollout and demonstrates Texas regulatory favorability accelerating autonomous scaling.",
+    "summary": "Tesla launched unsupervised Robotaxi service in Dallas and Houston on April 18, with initial geofence areas in suburban zones of each city and video evidence showing no safety driver. This triples Texas operations alongside ongoing Austin scaling.",
     "impact_score": 2,
-    "impact_reason": "Clear positive catalyst showing execution on multi-city expansion plan with unsupervised operations, though Dallas/Houston fleet sizes are minimal (2 vehicles each as of launch week), the regulatory and operational precedent materially validates Austin scaling model across new geographies.",
+    "impact_reason": "Establishes new unsupervised hubs in Texas, directly accelerating overall state-wide fleet scaling and data collection momentum despite small initial deployments.",
     "captured_at": "2026-04-23T11:38:45+00:00"
   },
   {
@@ -43,14 +52,5 @@
     "impact_score": 1,
     "impact_reason": "Mildly positive incremental progress in Austin unsupervised fleet growth, but the modest absolute number (10 vehicles) remains far below stated targets and demonstrates slow scaling velocity for the flagship market.",
     "captured_at": "2026-04-23T11:29:02+00:00"
-  },
-  {
-    "date": "2026-04-15",
-    "title": "Elon Musk Announces Austin Robotaxi Fleet to Double in December",
-    "url": "https://www.notateslaapp.com/news/3367/tesla-to-double-austin-robotaxi-fleet-but-will-it-meet-its-2025-target",
-    "summary": "Elon Musk stated on X that the Austin Robotaxi fleet, currently at 29 supervised vehicles per community tracker, will double to around 60 next month. This falls far short of the Q3 2025 guidance for 500 vehicles by year-end.",
-    "impact_score": -1,
-    "impact_reason": "Planned doubling of a tiny supervised fleet highlights persistent scaling challenges in Austin, far below targets and still reliant on safety drivers, slowing unsupervised rollout velocity.",
-    "captured_at": "2026-04-23T13:36:27+00:00"
   }
 ]
