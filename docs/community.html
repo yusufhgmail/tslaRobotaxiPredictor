@@ -251,9 +251,9 @@ function renderAuthBox() {
 function updatePostFormVisibility() {
   const signedIn = !!session;
   $('#postNotice').style.display = signedIn ? 'none' : 'block';
-  for (const el of $$('#postForm input, #postForm textarea, #postForm button')) {
-    el.disabled = !signedIn;
-  }
+  // Don't disable the inputs — let people compose their post first, then
+  // prompt for sign-in on submit. Only the "subscribe me" checkbox is
+  // irrelevant when unauthed (it uses session.user.email).
   $('#postSubscribe').disabled = !signedIn;
 }
 
@@ -304,9 +304,44 @@ $('#signOutBtn').addEventListener('click', async () => {
 });
 
 // ---------------- Submit top-level post ----------------
+const DRAFT_KEY = 'robotaxiDraft';
+
+function saveDraft() {
+  const draft = {
+    title: $('#postTitle').value,
+    body: $('#postBody').value,
+    isFR: $('#postIsFR').checked,
+    sub: $('#postSubscribe').checked,
+  };
+  if (draft.title || draft.body) localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  else localStorage.removeItem(DRAFT_KEY);
+}
+
+function restoreDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d.title) $('#postTitle').value = d.title;
+    if (d.body) $('#postBody').value = d.body;
+    $('#postIsFR').checked = !!d.isFR;
+    if (typeof d.sub === 'boolean') $('#postSubscribe').checked = d.sub;
+  } catch (e) { /* ignore */ }
+}
+
+// Keep the draft live as user types so magic-link redirect doesn't lose it.
+['postTitle', 'postBody'].forEach(id => $('#' + id).addEventListener('input', saveDraft));
+['postIsFR', 'postSubscribe'].forEach(id => $('#' + id).addEventListener('change', saveDraft));
+
 $('#postForm').addEventListener('submit', async e => {
   e.preventDefault();
-  if (!session) { $('#authModal').classList.add('on'); return; }
+  if (!session) {
+    // Not signed in — keep the draft and open the sign-in modal. After magic
+    // link auth finishes, restoreDraft() on the next page load fills it back.
+    saveDraft();
+    $('#authModal').classList.add('on');
+    return;
+  }
   const title = $('#postTitle').value.trim();
   const body = $('#postBody').value.trim();
   const isFR = $('#postIsFR').checked;
@@ -322,6 +357,7 @@ $('#postForm').addEventListener('submit', async e => {
   $('#postTitle').value = '';
   $('#postBody').value = '';
   $('#postIsFR').checked = false;
+  localStorage.removeItem(DRAFT_KEY);
   toast('Posted.', 'ok');
   renderFeed();
 });
@@ -507,6 +543,7 @@ async function renderFeed() {
 
 // ---------------- Init ----------------
 (async () => {
+  restoreDraft();
   // Supabase picks up ?code=... in URL for PKCE magic link; trigger session refresh after.
   await refreshSession();
   sb.auth.onAuthStateChange(async () => {
