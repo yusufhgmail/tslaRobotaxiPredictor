@@ -295,8 +295,66 @@ TEMPLATE = """<!doctype html>
     borderwidth: 1,
     borderpad: 4,
   }));
+
+  // ETA brackets: for each target, show a P25–P75 horizontal bracket at the
+  // threshold y-value and a date-range label above it. Helps the viewer
+  // read the likely crossing window directly off the chart.
+  const etaShapes = [];
+  const etaAnnotations = [];
+  const monthShort = d => {
+    const [y, m, day] = d.split('-').map(Number);
+    const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${names[m - 1]} ${day}`;
+  };
+  const monthYear = d => {
+    const [y, m] = d.split('-').map(Number);
+    const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${names[m - 1]} '${String(y).slice(-2)}`;
+  };
+  targets.forEach(t => {
+    const key = String(Math.round(t.value));
+    const e = etaBy[key];
+    if (!e || !e.p25 || !e.p75) return;
+    const color = t.color || '#facc15';
+    // Vertical lines at P25 and P75 from baseline up to threshold.
+    etaShapes.push({
+      type: 'line', xref: 'x', yref: 'y',
+      x0: e.p25, x1: e.p25, y0: 1, y1: t.value,
+      line: { color, width: 1, dash: 'dot' },
+      opacity: 0.7,
+    });
+    etaShapes.push({
+      type: 'line', xref: 'x', yref: 'y',
+      x0: e.p75, x1: e.p75, y0: 1, y1: t.value,
+      line: { color, width: 1, dash: 'dot' },
+      opacity: 0.7,
+    });
+    // Horizontal bracket bar at threshold height.
+    etaShapes.push({
+      type: 'line', xref: 'x', yref: 'y',
+      x0: e.p25, x1: e.p75, y0: t.value, y1: t.value,
+      line: { color, width: 3 },
+    });
+    // Date-range label above the midpoint.
+    const labelText = (e.p25.slice(0, 7) === e.p75.slice(0, 7))
+      ? monthYear(e.p25)
+      : `${monthShort(e.p25)} – ${monthShort(e.p75)}`;
+    const midIndex = Math.floor((new Date(e.p25).getTime() + new Date(e.p75).getTime()) / 2);
+    etaAnnotations.push({
+      x: new Date(midIndex).toISOString().slice(0, 10),
+      y: t.value,
+      xref: 'x', yref: 'y',
+      xanchor: 'center', yanchor: 'bottom',
+      text: labelText,
+      showarrow: false,
+      font: { size: 10, color },
+      bgcolor: 'rgba(11, 13, 16, 0.9)',
+      borderpad: 3,
+    });
+  });
   const chartLayoutBase = {
-    annotations: thresholdAnnotations,
+    annotations: thresholdAnnotations.concat(etaAnnotations),
+    shapes: etaShapes,
     paper_bgcolor: '#12161b',
     plot_bgcolor: '#12161b',
     font: { color: '#e6e9ee', family: 'Inter, system-ui, sans-serif' },
@@ -333,7 +391,8 @@ TEMPLATE = """<!doctype html>
       'yaxis.type': mode,
       'yaxis.rangemode': mode === 'linear' ? 'tozero' : 'normal',
       'yaxis.autorange': true,
-      annotations: showThresholds ? thresholdAnnotations : [],
+      annotations: showThresholds ? thresholdAnnotations.concat(etaAnnotations) : [],
+      shapes: showThresholds ? etaShapes : [],
     });
   }
   btnLinear.addEventListener('click', () => setScale('linear'));
