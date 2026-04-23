@@ -38,13 +38,14 @@ HISTORY_CSV = ROOT / "data" / "history.csv"
 NEWS_JSON = ROOT / "data" / "news.json"
 FORECAST_JSON = ROOT / "data" / "forecast.json"
 
-TARGET = 1800.0
-# "Robotaxi count" for re-rating purposes means UNSUPERVISED vehicles only
-# (no safety driver). The history CSV now stores one row per day with a
-# cumulative count derived from each vehicle's first_unsupervised_spotted
-# timestamp, so we have the full growth curve from launch through today.
+TARGETS = [
+    {"value": 1000.0, "label": "Min 2026 expectation", "color": "#fb923c"},
+    {"value": 1800.0, "label": "Re-rating threshold",  "color": "#facc15"},
+]
+# Back-compat: the scalar `TARGET` is the top threshold used in CLI summary.
+TARGET = TARGETS[-1]["value"]
 METRIC = "unsupervised_cumulative"
-FORECAST_WEEKS = 104  # 2 years — unsupervised growth is steeper off a small base
+FORECAST_WEEKS = 104
 N_SAMPLES = 2000
 
 # Weakly informative prior on weekly growth rate r (= Δln(fleet)/week).
@@ -213,18 +214,26 @@ def simulate(
         (anchor_dt + timedelta(weeks=int(w))).isoformat() for w in weeks
     ]
 
-    # When does each percentile cross the target?
-    def first_crossing(arr: np.ndarray) -> str | None:
-        over = np.where(arr >= TARGET)[0]
+    # When does each percentile cross each target?
+    def first_crossing(arr: np.ndarray, thresh: float) -> str | None:
+        over = np.where(arr >= thresh)[0]
         return forecast_dates[int(over[0])] if len(over) else None
 
-    eta = {
-        "p5": first_crossing(p5),
-        "p25": first_crossing(p25),
-        "p50": first_crossing(p50),
-        "p75": first_crossing(p75),
-        "p95": first_crossing(p95),
-    }
+    eta_by_target = {}
+    for t in TARGETS:
+        k = str(int(t["value"]))
+        eta_by_target[k] = {
+            "value": t["value"],
+            "label": t["label"],
+            "p5": first_crossing(p5, t["value"]),
+            "p25": first_crossing(p25, t["value"]),
+            "p50": first_crossing(p50, t["value"]),
+            "p75": first_crossing(p75, t["value"]),
+            "p95": first_crossing(p95, t["value"]),
+        }
+    # Top-level `eta_to_target` retained for the final (re-rating) threshold.
+    top = eta_by_target[str(int(TARGETS[-1]["value"]))]
+    eta = {k: top[k] for k in ("p5", "p25", "p50", "p75", "p95")}
 
     # Keep a subsample of full trajectories for the cloud visualisation.
     sample_idx = rng.choice(n_samples, size=min(120, n_samples), replace=False)
@@ -235,7 +244,9 @@ def simulate(
 
     return {
         "metric": METRIC,
-        "target": TARGET,
+        "target": TARGET,                 # legacy scalar (top threshold)
+        "targets": TARGETS,               # full list for the chart
+        "eta_by_target": eta_by_target,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "historical": [{"date": h["date"], "value": h["value"]} for h in history],
         "forecast_dates": forecast_dates,

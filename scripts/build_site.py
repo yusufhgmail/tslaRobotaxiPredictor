@@ -103,12 +103,22 @@ TEMPLATE = """<!doctype html>
   const eta = data.eta_to_target || {};
   const fmt = n => n == null ? '—' : (Math.round(n * 100) / 100).toLocaleString();
   const latest = data.historical.length ? data.historical[data.historical.length - 1].value : null;
+  const targets = data.targets || [{ value: data.target, label: 'Target', color: '#facc15' }];
+  const etaBy = data.eta_by_target || {};
+  const targetCards = targets.map(t => {
+    const k = String(Math.round(t.value));
+    const e = etaBy[k] || {};
+    return {
+      lbl: 'P50 ETA to ' + Math.round(t.value).toLocaleString(),
+      val: e.p50 || '—',
+      foot: t.label + (e.p25 ? ` · P25 ${e.p25}` : ''),
+    };
+  });
   const cards = [
     { lbl: 'Unsupervised fleet', val: fmt(latest), foot: data.historical.length ? data.historical[data.historical.length - 1].date : '' },
-    { lbl: 'Target', val: Math.round(data.target).toLocaleString(), foot: 're-rating threshold' },
     { lbl: 'Fitted weekly growth', val: ((fit.rate_weekly || 0) * 100).toFixed(1) + '%', foot: fit.prior_dominated ? 'prior-dominated (' + fit.n_points + ' pts)' : 'n=' + fit.n_points },
     { lbl: 'Annualized', val: (fit.annualized_growth_pct || 0).toLocaleString(undefined, { maximumFractionDigits: 0 }) + '%', foot: fit.doubling_weeks ? `doubles ~${fit.doubling_weeks.toFixed(1)}w` : '' },
-    { lbl: 'P50 ETA to 1,800', val: eta.p50 || '—', foot: eta.p25 ? `P25 ${eta.p25}` : '' },
+    ...targetCards,
     { lbl: 'News rate shift', val: ((fit.news_rate_shift || 0) * 100).toFixed(2) + ' pp/wk', foot: (data.news || []).length + ' scored items' },
   ];
   document.getElementById('stats').innerHTML = cards.map(c =>
@@ -163,18 +173,19 @@ TEMPLATE = """<!doctype html>
     type: 'scatter',
   };
 
-  // Target line across full x-range.
+  // Threshold lines across the full x-range.
   const allX = histX.concat(fx);
-  const target = {
-    x: [allX[0], allX[allX.length - 1]],
-    y: [data.target, data.target],
+  const xRange = [allX[0], allX[allX.length - 1]];
+  const thresholdTraces = targets.map(t => ({
+    x: xRange,
+    y: [t.value, t.value],
     mode: 'lines',
-    line: { color: '#facc15', width: 1.5, dash: 'dot' },
-    name: 'Target (1,800)',
+    line: { color: t.color || '#facc15', width: 1.5, dash: 'dot' },
+    name: `${t.label} (${Math.round(t.value).toLocaleString()})`,
     type: 'scatter',
-  };
+  }));
 
-  Plotly.newPlot('chart', [bandOuter, bandInner, ...sampleTraces, median, target, actual], {
+  Plotly.newPlot('chart', [bandOuter, bandInner, ...sampleTraces, median, ...thresholdTraces, actual], {
     paper_bgcolor: '#12161b',
     plot_bgcolor: '#12161b',
     font: { color: '#e6e9ee', family: 'Inter, system-ui, sans-serif' },
