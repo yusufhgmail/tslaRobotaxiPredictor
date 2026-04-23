@@ -24,9 +24,10 @@ TEMPLATE = """<!doctype html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Tesla Robotaxi Scaling Predictor — Austin</title>
-<meta name="description" content="Weekly-updated forecast of Tesla's Austin robotaxi fleet size vs. the 1,800-vehicle re-rating threshold." />
+<title>Tesla Robotaxi Scaling Predictor</title>
+<meta name="description" content="Weekly-updated forecast of Tesla's unsupervised robotaxi fleet vs. the 1,800-vehicle re-rating threshold." />
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
   :root {
     color-scheme: dark;
@@ -85,11 +86,50 @@ TEMPLATE = """<!doctype html>
   .news-body .title a:hover { border-bottom-color: var(--text); }
   .news-body .reason { color: var(--muted); font-size: 13px; margin-top: 2px; }
   .footer { color: var(--muted); font-size: 12px; margin-top: 28px; text-align: center; }
+
+  /* Subscribe button + modal */
+  .header-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 4px; }
+  .header-row h1 { flex: 1; }
+  .btn-subscribe {
+    background: var(--accent); color: #0b0d10; border: 0; border-radius: 6px;
+    padding: 7px 14px; font-weight: 600; font-size: 13px; cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn-subscribe:hover { filter: brightness(1.08); }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none;
+    align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+  .modal.on { display: flex; }
+  .modal .dialog { background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+    max-width: 520px; width: 100%; padding: 22px; max-height: 90vh; overflow: auto; }
+  .modal h2 { margin: 0 0 6px; font-size: 18px; font-weight: 600; }
+  .modal .dialog .close { float: right; background: transparent; border: 0; color: var(--muted);
+    font-size: 22px; cursor: pointer; padding: 0; line-height: 1; }
+  .modal .dialog .close:hover { color: var(--text); }
+  .modal p { color: var(--muted); font-size: 13px; margin: 4px 0 12px; }
+  .modal .preview { background: #0b0d10; border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px; margin: 12px 0 16px; font-size: 12px; }
+  .modal .preview .email-from { color: var(--muted); font-size: 11px; margin-bottom: 8px; }
+  .modal .preview .email-subj { color: var(--text); font-weight: 600; margin-bottom: 8px; font-size: 13px; }
+  .modal .preview table { border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+  .modal .preview td { padding: 2px 10px 2px 0; }
+  .modal .preview td.k { color: var(--muted); }
+  .modal .preview .hero { font-size: 20px; font-weight: 600; margin-bottom: 2px; }
+  .modal .preview .hero small { font-size: 12px; font-weight: 400; color: var(--muted); }
+  .modal form .row { display: flex; gap: 8px; align-items: stretch; }
+  .modal input[type=email] { flex: 1; background: #0b0d10; border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); padding: 8px 10px; font-family: inherit; font-size: 14px; }
+  .modal input[type=email]:focus { outline: none; border-color: var(--accent); }
+  .modal .msg { margin-top: 10px; font-size: 12px; min-height: 16px; }
+  .modal .msg.ok { color: var(--pos); }
+  .modal .msg.err { color: var(--neg); }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Tesla Robotaxi Scaling Predictor — Austin</h1>
+  <div class="header-row">
+    <h1>Tesla Robotaxi Scaling Predictor</h1>
+    <button class="btn-subscribe" id="openSubscribe">📬 Subscribe to weekly updates</button>
+  </div>
   <div class="sub">
     Unsupervised fleet vs. 1,800 re-rating threshold. Data from
     <a href="https://robotaxitracker.com/?provider=tesla&area=austin" target="_blank" rel="noopener">robotaxitracker.com</a>.
@@ -103,7 +143,6 @@ TEMPLATE = """<!doctype html>
     <span>Y-axis scale:</span>
     <button id="scale-log" class="on">Log</button>
     <button id="scale-linear">Linear</button>
-    <span class="hint">Log: exponentials look linear and the slope = growth rate. Linear: hockey-stick shape.</span>
   </div>
   <div id="chart"></div>
   <div id="thresholds"></div>
@@ -113,6 +152,36 @@ TEMPLATE = """<!doctype html>
 
   <div class="footer">
     Forecast is a prior-informed Monte Carlo exponential. The cloud narrows as weekly datapoints accumulate. Not investment advice.
+  </div>
+</div>
+
+<div class="modal" id="subscribeModal">
+  <div class="dialog">
+    <button type="button" class="close" aria-label="Close" id="closeSubscribe">×</button>
+    <h2>📬 Weekly robotaxi update</h2>
+    <p>Every <b>Monday at 08:00 CT / 13:00 UTC</b>, right after this dashboard refreshes, I'll email you a summary. One email a week. One-click unsubscribe in every email.</p>
+
+    <div class="preview" id="emailPreview">
+      <div class="email-from">From: Robotaxi Predictor &lt;onboarding@resend.dev&gt;</div>
+      <div class="email-subj" id="previewSubject">Robotaxi update: — unsupervised</div>
+      <div class="hero" id="previewHero">— <small>unsupervised</small></div>
+      <div id="previewDelta" style="color:var(--muted);font-size:12px;margin-bottom:8px"></div>
+      <table>
+        <tr><td class="k">Weekly growth</td><td id="previewGrowth">—</td></tr>
+        <tr><td class="k">P50 to 1,000</td><td id="previewEta1000">—</td></tr>
+        <tr><td class="k">P50 to 1,800</td><td id="previewEta1800">—</td></tr>
+        <tr><td class="k">News rate shift</td><td id="previewNews">—</td></tr>
+      </table>
+      <div style="color:var(--muted);font-size:11px;margin-top:10px">+ fresh news items tagged with impact score</div>
+    </div>
+
+    <form id="subscribeForm">
+      <div class="row">
+        <input type="email" id="subscribeEmail" placeholder="you@example.com" required autofocus />
+        <button type="submit" class="btn-subscribe" id="subscribeBtn">Subscribe</button>
+      </div>
+      <div class="msg" id="subscribeMsg"></div>
+    </form>
   </div>
 </div>
 
@@ -317,7 +386,7 @@ TEMPLATE = """<!doctype html>
     },
     showlegend: false,
     hovermode: 'closest',
-  }, { displaylogo: false, responsive: true });
+  }, { displaylogo: false, responsive: true, displayModeBar: false });
 
   // ---------- news list ----------
   const nl = document.getElementById('newslist');
@@ -339,6 +408,63 @@ TEMPLATE = """<!doctype html>
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[c]));
   }
+
+  // ---------- Subscribe modal ----------
+  const SUPABASE_URL = 'https://rpkxxdtgthzrucbnssjj.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_IlSsw8rpBZlWN6riB6KCrA__PdklPUd';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+  const modal = document.getElementById('subscribeModal');
+  const openBtn = document.getElementById('openSubscribe');
+  const closeBtn = document.getElementById('closeSubscribe');
+  const form = document.getElementById('subscribeForm');
+  const emailInput = document.getElementById('subscribeEmail');
+  const submitBtn = document.getElementById('subscribeBtn');
+  const msg = document.getElementById('subscribeMsg');
+
+  // Populate the email preview with live values from the current forecast.
+  document.getElementById('previewSubject').textContent =
+    `Robotaxi update: ${latest ?? '—'} unsupervised — ${(data.generated_at || '').slice(0, 10)}`;
+  document.getElementById('previewHero').innerHTML =
+    `${latest ?? '—'} <small>unsupervised</small>`;
+  document.getElementById('previewDelta').textContent =
+    latest != null ? 'Week-over-week delta shown for each run' : '';
+  document.getElementById('previewGrowth').textContent =
+    `${((fit.rate_weekly || 0) * 100).toFixed(1)}% (doubles ~${fit.doubling_weeks ? fit.doubling_weeks.toFixed(1) + 'w' : 'n/a'})`;
+  document.getElementById('previewEta1000').textContent = (etaBy['1000']?.p50) || '—';
+  document.getElementById('previewEta1800').textContent = (etaBy['1800']?.p50) || eta.p50 || '—';
+  document.getElementById('previewNews').textContent =
+    `${((fit.news_rate_shift || 0) * 100).toFixed(2)} pp/wk from ${(data.news || []).length} items`;
+
+  function openModal() { modal.classList.add('on'); msg.textContent=''; msg.className='msg'; emailInput.focus(); }
+  function closeModal() { modal.classList.remove('on'); }
+  openBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('on')) closeModal(); });
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    submitBtn.disabled = true;
+    msg.textContent = 'Subscribing…';
+    msg.className = 'msg';
+    const { error } = await sb.from('subscribers').insert({ email }).select();
+    submitBtn.disabled = false;
+    if (error) {
+      if (/duplicate|unique/i.test(error.message)) {
+        msg.textContent = "You're already subscribed — thanks.";
+        msg.className = 'msg ok';
+      } else {
+        msg.textContent = 'Error: ' + error.message;
+        msg.className = 'msg err';
+      }
+      return;
+    }
+    msg.textContent = "Subscribed. You'll get the next Monday update.";
+    msg.className = 'msg ok';
+    emailInput.value = '';
+  });
 })();
 </script>
 </body>
