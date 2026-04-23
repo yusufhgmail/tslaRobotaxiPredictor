@@ -398,6 +398,7 @@
   // ---------- news timeline (below main chart) ----------
   const news = (data.news || []).slice().sort((a, b) => a.date.localeCompare(b.date));
   const colorFor = s => s > 0 ? '#34d399' : s < 0 ? '#f87171' : '#9ca3af';
+  const truncate = (s, n) => (s || '').length > n ? (s || '').slice(0, n - 1) + '…' : (s || '');
   const newsTrace = {
     x: news.map(n => n.date),
     y: news.map(n => n.impact_score),
@@ -407,8 +408,17 @@
       size: news.map(n => 10 + Math.abs(n.impact_score) * 4),
       line: { color: '#0b0d10', width: 1 },
     },
-    text: news.map(n => `<b>${n.title}</b><br>${n.impact_reason}`),
-    hovertemplate: '%{text}<extra>%{x} · impact %{y:+d}</extra>',
+    // Compact, site-themed hover: title only (reason is visible in the list below),
+    // with a thin accent border in the impact color.
+    customdata: news.map(n => [truncate(n.title, 70), n.date]),
+    hovertemplate: '<b>%{customdata[0]}</b><br>%{customdata[1]} · impact %{y:+d}<extra></extra>',
+    hoverlabel: {
+      bgcolor: '#12161b',
+      bordercolor: news.map(n => colorFor(n.impact_score)),
+      font: { color: '#e6e9ee', family: 'Inter, -apple-system, system-ui, sans-serif', size: 12 },
+      align: 'left',
+      namelength: -1,
+    },
     type: 'scatter',
     name: 'News',
   };
