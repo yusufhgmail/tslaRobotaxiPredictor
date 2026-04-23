@@ -39,8 +39,24 @@ NEWS_JSON = ROOT / "data" / "news.json"
 FORECAST_JSON = ROOT / "data" / "forecast.json"
 
 TARGETS = [
-    {"value": 1000.0, "label": "Min 2026 expectation", "color": "#fb923c"},
-    {"value": 1800.0, "label": "Re-rating threshold",  "color": "#facc15"},
+    {
+        "value": 1000.0,
+        "label": "Min 2026 (Jo Bhakdi)",
+        "color": "#fb923c",
+        "source_url": "https://x.com/JOBhakdi/status/2047259189630603449?s=20",
+        "source_author": "Jo Bhakdi",
+        "source_handle": "@JOBhakdi",
+        "note": "If not reached by Dec 2026, market is disappointed.",
+    },
+    {
+        "value": 1800.0,
+        "label": "Forced re-rating (Jo Bhakdi)",
+        "color": "#facc15",
+        "source_url": "https://x.com/JOBhakdi",
+        "source_author": "Jo Bhakdi",
+        "source_handle": "@JOBhakdi",
+        "note": "Forcing function for a forced market re-rating.",
+    },
 ]
 # Back-compat: the scalar `TARGET` is the top threshold used in CLI summary.
 TARGET = TARGETS[-1]["value"]
