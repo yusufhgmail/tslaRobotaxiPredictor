@@ -312,15 +312,28 @@ TEMPLATE = """<!doctype html>
   };
   Plotly.newPlot('chart', chartTraces, chartLayoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 
+  // Compute indices of threshold traces inside chartTraces so we can toggle them
+  // together with their right-edge annotations when the y-axis scale changes.
+  const thresholdStartIdx = 2 + sampleTraces.length + 1; // bandOuter, bandInner, samples, median
+  const thresholdIndices = thresholdTraces.map((_, i) => thresholdStartIdx + i);
+
   const btnLinear = document.getElementById('scale-linear');
   const btnLog = document.getElementById('scale-log');
   function setScale(mode) {
     btnLinear.classList.toggle('on', mode === 'linear');
     btnLog.classList.toggle('on', mode === 'log');
+    // On linear scale the y-axis stretches to the Monte-Carlo upper tail, which
+    // flattens the 1,000/1,800 threshold lines onto the x-axis and makes them
+    // useless — hide them (and their labels) when linear is active.
+    const showThresholds = mode === 'log';
+    if (thresholdIndices.length) {
+      Plotly.restyle('chart', { visible: showThresholds ? true : 'legendonly' }, thresholdIndices);
+    }
     Plotly.relayout('chart', {
       'yaxis.type': mode,
       'yaxis.rangemode': mode === 'linear' ? 'tozero' : 'normal',
       'yaxis.autorange': true,
+      annotations: showThresholds ? thresholdAnnotations : [],
     });
   }
   btnLinear.addEventListener('click', () => setScale('linear'));
