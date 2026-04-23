@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Community — Tesla Robotaxi Scaling Predictor</title>
+<meta name="description" content="Feature requests, discussion, and newsletter signup for the Tesla robotaxi scaling predictor." />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0b0d10;
+    --panel: #12161b;
+    --border: #1f262e;
+    --text: #e6e9ee;
+    --muted: #8a94a3;
+    --accent: #4ea3ff;
+    --pos: #34d399;
+    --neg: #f87171;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    font-size: 15px; line-height: 1.5;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 24px 20px 80px; }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  header h1 { font-size: 20px; font-weight: 600; margin: 0; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  header nav { margin-left: auto; display: flex; gap: 14px; align-items: center; font-size: 13px; }
+  header nav a { color: var(--muted); text-decoration: none; }
+  header nav a:hover { color: var(--text); }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+  input[type=text], input[type=email], input[type=url], textarea {
+    width: 100%; background: #0b0d10; border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text); font-family: inherit; font-size: 14px; padding: 8px 10px;
+  }
+  input[type=text]:focus, input[type=email]:focus, input[type=url]:focus, textarea:focus {
+    outline: none; border-color: var(--accent);
+  }
+  textarea { min-height: 80px; resize: vertical; }
+  button {
+    background: var(--accent); color: #0b0d10; border: 0; border-radius: 6px;
+    padding: 8px 14px; font-weight: 600; font-size: 13px; cursor: pointer;
+  }
+  button:hover { filter: brightness(1.08); }
+  button.secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  button.secondary:hover { color: var(--text); border-color: var(--text); }
+  button.icon { background: transparent; color: var(--muted); padding: 2px 6px; font-size: 14px; border: 1px solid transparent; border-radius: 4px; }
+  button.icon:hover { color: var(--text); border-color: var(--border); background: rgba(255,255,255,0.03); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  label input[type=checkbox] { accent-color: var(--accent); }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .row > *:first-child { flex: 1; }
+  .muted { color: var(--muted); font-size: 12px; }
+
+  #authbox { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  #authbox .me { color: var(--muted); }
+  #authbox .me b { color: var(--text); }
+
+  .sort-bar { display: flex; gap: 8px; margin-bottom: 10px; font-size: 12px; color: var(--muted); }
+  .sort-bar button { background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 4px 10px; border-radius: 999px; font-weight: 500; font-size: 12px; }
+  .sort-bar button.on { background: var(--accent); color: #0b0d10; border-color: var(--accent); }
+
+  .post { display: grid; grid-template-columns: 44px 1fr; gap: 12px; }
+  .post .votecol { display: flex; flex-direction: column; align-items: center; gap: 2px; padding-top: 2px; }
+  .post .votecol .score { font-weight: 600; font-variant-numeric: tabular-nums; font-size: 13px; }
+  .post .up.on { color: var(--pos); }
+  .post .down.on { color: var(--neg); }
+  .post .body h2 { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+  .post .body .meta { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .post .body .meta a { color: var(--muted); }
+  .post .body .meta .tag { display: inline-block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; padding: 1px 6px; border-radius: 3px; background: rgba(78,163,255,0.15); color: var(--accent); margin-left: 6px; }
+  .post .body .content { white-space: pre-wrap; word-wrap: break-word; }
+  .post .body .actions { margin-top: 6px; font-size: 12px; color: var(--muted); display: flex; gap: 12px; }
+  .post .body .actions button { background: transparent; border: 0; color: var(--muted); font-size: 12px; padding: 0; cursor: pointer; }
+  .post .body .actions button:hover { color: var(--text); }
+  .post.deleted .body .content { color: var(--muted); font-style: italic; }
+
+  .replies { margin-top: 10px; padding-left: 16px; border-left: 1px dashed var(--border); }
+  .reply-form textarea { min-height: 60px; }
+
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 100; }
+  .modal.on { display: flex; }
+  .modal .panel { max-width: 420px; width: 92%; margin: 0; }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--panel); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; font-size: 13px; z-index: 200; display: none; }
+  .toast.on { display: block; }
+  .toast.ok { border-color: var(--pos); color: var(--pos); }
+  .toast.err { border-color: var(--neg); color: var(--neg); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Community · feature requests · discussion</h1>
+      <div class="sub">For the Tesla Robotaxi Scaling Predictor.</div>
+    </div>
+    <nav>
+      <a href="./">← Dashboard</a>
+      <div id="authbox"></div>
+    </nav>
+  </header>
+
+  <!-- newsletter standalone signup -->
+  <div class="panel" id="newsletterPanel">
+    <div style="font-weight:600;margin-bottom:4px">📬 Weekly robotaxi update by email</div>
+    <div class="muted" style="margin-bottom:10px">Same summary I send myself every Monday. Opt out with one click anytime.</div>
+    <form id="newsletterForm" class="row">
+      <input type="email" id="newsletterEmail" placeholder="you@example.com" required />
+      <button type="submit">Subscribe</button>
+    </form>
+  </div>
+
+  <!-- submit a new top-level post -->
+  <div class="panel" id="submitPanel">
+    <div style="font-weight:600;margin-bottom:8px">Start a thread</div>
+    <form id="postForm">
+      <input type="text" id="postTitle" placeholder="Title (3–140 chars)" required maxlength="140" />
+      <div style="height:8px"></div>
+      <textarea id="postBody" placeholder="What's on your mind? Feature request, question, observation, debate — all welcome." required maxlength="8000"></textarea>
+      <div style="height:8px"></div>
+      <div class="row">
+        <label><input type="checkbox" id="postIsFR" /> This is a feature request</label>
+        <label><input type="checkbox" id="postSubscribe" checked /> Also subscribe me to the weekly email</label>
+        <button type="submit" id="postSubmitBtn">Post</button>
+      </div>
+      <div class="muted" id="postNotice" style="margin-top:8px;display:none">You need to sign in to post. <a href="#" id="openAuthFromPost">Sign in</a>.</div>
+    </form>
+  </div>
+
+  <div class="sort-bar">
+    <span>Sort:</span>
+    <button class="on" data-sort="hot">Hot</button>
+    <button data-sort="new">New</button>
+    <button data-sort="top">Top</button>
+  </div>
+
+  <div id="feed"></div>
+</div>
+
+<!-- auth modal -->
+<div class="modal" id="authModal">
+  <div class="panel">
+    <div style="font-weight:600;margin-bottom:6px">Sign in / sign up</div>
+    <div class="muted" style="margin-bottom:10px">We'll email you a one-click sign-in link. No password.</div>
+    <form id="authForm">
+      <input type="email" id="authEmail" placeholder="you@example.com" required />
+      <div style="height:10px"></div>
+      <div class="row" style="justify-content:flex-end">
+        <button type="button" class="secondary" id="authCancel">Cancel</button>
+        <button type="submit" id="authSubmit">Send magic link</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- profile modal -->
+<div class="modal" id="profileModal">
+  <div class="panel">
+    <div style="font-weight:600;margin-bottom:6px">Your profile</div>
+    <div class="muted" style="margin-bottom:10px">Shown next to every comment you post.</div>
+    <form id="profileForm">
+      <label style="display:block;margin-bottom:4px;color:var(--muted)">Display name</label>
+      <input type="text" id="profDisplay" maxlength="50" required />
+      <div style="height:10px"></div>
+      <label style="display:block;margin-bottom:4px;color:var(--muted)">X / Twitter handle (optional)</label>
+      <input type="text" id="profX" maxlength="15" placeholder="without the @" />
+      <div style="height:10px"></div>
+      <label style="display:block;margin-bottom:4px;color:var(--muted)">LinkedIn URL (optional)</label>
+      <input type="url" id="profLinkedin" placeholder="https://linkedin.com/in/..." />
+      <div style="height:14px"></div>
+      <div class="row" style="justify-content:space-between">
+        <button type="button" class="secondary" id="signOutBtn">Sign out</button>
+        <div>
+          <button type="button" class="secondary" id="profileCancel">Cancel</button>
+          <button type="submit">Save</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---------------- Config (publishable key — safe in client) ----------------
+const SUPABASE_URL = 'https://rpkxxdtgthzrucbnssjj.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_IlSsw8rpBZlWN6riB6KCrA__PdklPUd';
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: { persistSession: true, detectSessionInUrl: true, flowType: 'pkce' },
+});
+
+// ---------------- Utilities ----------------
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+function toast(msg, kind = 'ok') {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.className = 'toast on ' + kind;
+  setTimeout(() => el.classList.remove('on'), 3500);
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function timeAgo(iso) {
+  const sec = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (sec < 60) return 'just now';
+  if (sec < 3600) return Math.round(sec / 60) + 'm ago';
+  if (sec < 86400) return Math.round(sec / 3600) + 'h ago';
+  if (sec < 604800) return Math.round(sec / 86400) + 'd ago';
+  return new Date(iso).toISOString().slice(0, 10);
+}
+
+// ---------------- Auth state ----------------
+let session = null;
+let myProfile = null;
+
+async function refreshSession() {
+  const { data } = await sb.auth.getSession();
+  session = data.session;
+  if (session) {
+    const { data: p } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+    myProfile = p || null;
+  } else {
+    myProfile = null;
+  }
+  renderAuthBox();
+  updatePostFormVisibility();
+}
+
+function renderAuthBox() {
+  const box = $('#authbox');
+  if (session && myProfile) {
+    box.innerHTML = `<span class="me">Signed in as <b>${escapeHtml(myProfile.display_name)}</b></span>
+      <button class="secondary" id="editProfileBtn">Profile</button>`;
+    $('#editProfileBtn').addEventListener('click', openProfileModal);
+  } else {
+    box.innerHTML = `<button id="signInBtn">Sign in</button>`;
+    $('#signInBtn').addEventListener('click', () => $('#authModal').classList.add('on'));
+  }
+}
+
+function updatePostFormVisibility() {
+  const signedIn = !!session;
+  $('#postNotice').style.display = signedIn ? 'none' : 'block';
+  for (const el of $$('#postForm input, #postForm textarea, #postForm button')) {
+    el.disabled = !signedIn;
+  }
+  $('#postSubscribe').disabled = !signedIn;
+}
+
+// Magic-link sign-in
+$('#authForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  $('#authSubmit').disabled = true;
+  const email = $('#authEmail').value.trim();
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.href.split('#')[0].split('?')[0] },
+  });
+  $('#authSubmit').disabled = false;
+  if (error) { toast('Error: ' + error.message, 'err'); return; }
+  toast('Check your inbox for the sign-in link.', 'ok');
+  $('#authModal').classList.remove('on');
+});
+$('#authCancel').addEventListener('click', () => $('#authModal').classList.remove('on'));
+$('#openAuthFromPost').addEventListener('click', e => { e.preventDefault(); $('#authModal').classList.add('on'); });
+
+// Profile edit
+function openProfileModal() {
+  $('#profDisplay').value = myProfile?.display_name || '';
+  $('#profX').value = myProfile?.x_handle || '';
+  $('#profLinkedin').value = myProfile?.linkedin_url || '';
+  $('#profileModal').classList.add('on');
+}
+$('#profileCancel').addEventListener('click', () => $('#profileModal').classList.remove('on'));
+$('#profileForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const patch = {
+    display_name: $('#profDisplay').value.trim(),
+    x_handle: $('#profX').value.trim() || null,
+    linkedin_url: $('#profLinkedin').value.trim() || null,
+  };
+  const { error } = await sb.from('profiles').update(patch).eq('id', session.user.id);
+  if (error) { toast('Save failed: ' + error.message, 'err'); return; }
+  toast('Saved.', 'ok');
+  $('#profileModal').classList.remove('on');
+  await refreshSession();
+  renderFeed();
+});
+$('#signOutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  $('#profileModal').classList.remove('on');
+  await refreshSession();
+  renderFeed();
+});
+
+// ---------------- Newsletter (standalone) ----------------
+$('#newsletterForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = $('#newsletterEmail').value.trim();
+  const { error } = await sb.from('subscribers').insert({ email }).select();
+  if (error && !error.message.includes('duplicate')) {
+    toast('Error: ' + error.message, 'err'); return;
+  }
+  toast("Subscribed. You'll get the next Monday update.", 'ok');
+  $('#newsletterEmail').value = '';
+});
+
+// ---------------- Submit top-level post ----------------
+$('#postForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!session) { $('#authModal').classList.add('on'); return; }
+  const title = $('#postTitle').value.trim();
+  const body = $('#postBody').value.trim();
+  const isFR = $('#postIsFR').checked;
+  const sub = $('#postSubscribe').checked;
+
+  const { error: pErr } = await sb.from('posts').insert({
+    author_id: session.user.id, title, body, is_feature_request: isFR,
+  });
+  if (pErr) { toast('Post failed: ' + pErr.message, 'err'); return; }
+  if (sub) {
+    await sb.from('subscribers').insert({ email: session.user.email, user_id: session.user.id }).select();
+  }
+  $('#postTitle').value = '';
+  $('#postBody').value = '';
+  $('#postIsFR').checked = false;
+  toast('Posted.', 'ok');
+  renderFeed();
+});
+
+// ---------------- Feed ----------------
+let currentSort = 'hot';
+$$('.sort-bar button').forEach(b => b.addEventListener('click', () => {
+  currentSort = b.dataset.sort;
+  $$('.sort-bar button').forEach(x => x.classList.toggle('on', x === b));
+  renderFeed();
+}));
+
+async function fetchFeed() {
+  // Fetch top-level posts with score, then all descendants, then merge.
+  const sort = currentSort;
+  let q = sb.from('posts_with_score').select('*').is('parent_id', null);
+  if (sort === 'new') q = q.order('created_at', { ascending: false });
+  else if (sort === 'top') q = q.order('score', { ascending: false }).order('created_at', { ascending: false });
+  else {
+    // hot: score + recency decay approximation, done client-side after fetch.
+    q = q.order('created_at', { ascending: false });
+  }
+  const { data: tops, error } = await q.limit(80);
+  if (error) throw error;
+
+  if (sort === 'hot' && tops) {
+    const now = Date.now();
+    tops.forEach(p => {
+      const ageH = Math.max(1, (now - new Date(p.created_at).getTime()) / 3600_000);
+      p._hot = (p.score + 2) / Math.pow(ageH + 2, 1.3);
+    });
+    tops.sort((a, b) => b._hot - a._hot);
+  }
+
+  const topIds = (tops || []).map(t => t.id);
+  let replies = [];
+  if (topIds.length) {
+    // Recursive descendants: fetch up to 1000 non-top posts, filter client-side.
+    const { data: all } = await sb.from('posts_with_score').select('*').not('parent_id', 'is', null).order('created_at', { ascending: true }).limit(1000);
+    replies = all || [];
+  }
+
+  // Batch profiles.
+  const authorIds = [...new Set([...(tops || []).map(p => p.author_id), ...replies.map(p => p.author_id)])];
+  let profiles = {};
+  if (authorIds.length) {
+    const { data: profs } = await sb.from('profiles').select('*').in('id', authorIds);
+    (profs || []).forEach(p => { profiles[p.id] = p; });
+  }
+
+  // My votes (if signed in).
+  let myVotes = {};
+  if (session) {
+    const { data: vs } = await sb.from('votes').select('post_id, value').eq('user_id', session.user.id);
+    (vs || []).forEach(v => { myVotes[v.post_id] = v.value; });
+  }
+
+  return { tops: tops || [], replies, profiles, myVotes };
+}
+
+function childrenOf(parent_id, replies) {
+  return replies.filter(r => r.parent_id === parent_id);
+}
+
+function renderPost(post, ctx, isTop = false) {
+  const author = ctx.profiles[post.author_id] || { display_name: '(deleted)' };
+  const myVote = ctx.myVotes[post.id] || 0;
+  const isDeleted = !!post.deleted_at;
+  const canReply = !!session && !isDeleted;
+
+  let links = '';
+  if (author.x_handle) links += `<a href="https://x.com/${encodeURIComponent(author.x_handle)}" target="_blank" rel="noopener" title="X / Twitter">𝕏</a> `;
+  if (author.linkedin_url) links += `<a href="${escapeHtml(author.linkedin_url)}" target="_blank" rel="noopener" title="LinkedIn">in</a>`;
+
+  const titleHtml = isTop
+    ? `<h2>${escapeHtml(post.title || '')}${post.is_feature_request ? '<span class="tag">feature request</span>' : ''}</h2>`
+    : '';
+
+  const el = document.createElement('div');
+  el.className = 'panel post' + (isDeleted ? ' deleted' : '');
+  el.innerHTML = `
+    <div class="votecol">
+      <button class="icon up ${myVote === 1 ? 'on' : ''}" data-id="${post.id}" data-v="1" title="Upvote">▲</button>
+      <div class="score">${post.score}</div>
+      <button class="icon down ${myVote === -1 ? 'on' : ''}" data-id="${post.id}" data-v="-1" title="Downvote">▼</button>
+    </div>
+    <div class="body">
+      ${titleHtml}
+      <div class="meta">
+        <b>${escapeHtml(author.display_name)}</b>
+        ${links ? '· ' + links : ''}
+        · ${timeAgo(post.created_at)}
+      </div>
+      <div class="content">${isDeleted ? '(removed)' : escapeHtml(post.body)}</div>
+      <div class="actions">
+        ${canReply ? `<button data-reply="${post.id}">Reply</button>` : ''}
+      </div>
+      <div class="reply-host"></div>
+      <div class="replies-host"></div>
+    </div>
+  `;
+
+  // Wire votes
+  el.querySelectorAll('.votecol button').forEach(btn => btn.addEventListener('click', () => handleVote(post.id, Number(btn.dataset.v))));
+  // Wire reply button
+  const replyBtn = el.querySelector('[data-reply]');
+  if (replyBtn) replyBtn.addEventListener('click', () => openReply(post, el));
+
+  // Render children recursively
+  const kids = childrenOf(post.id, ctx.replies);
+  if (kids.length) {
+    const host = el.querySelector('.replies-host');
+    const wrap = document.createElement('div');
+    wrap.className = 'replies';
+    kids.forEach(k => wrap.appendChild(renderPost(k, ctx, false)));
+    host.appendChild(wrap);
+  }
+  return el;
+}
+
+function openReply(parent, parentEl) {
+  const host = parentEl.querySelector('.reply-host');
+  host.innerHTML = `
+    <form class="reply-form" style="margin-top:8px">
+      <textarea placeholder="Reply…" maxlength="8000" required></textarea>
+      <div class="row" style="margin-top:6px;justify-content:flex-end">
+        <button type="button" class="secondary" data-cancel>Cancel</button>
+        <button type="submit">Post reply</button>
+      </div>
+    </form>
+  `;
+  const form = host.querySelector('form');
+  form.querySelector('[data-cancel]').addEventListener('click', () => { host.innerHTML = ''; });
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const body = form.querySelector('textarea').value.trim();
+    if (!body) return;
+    const { error } = await sb.from('posts').insert({
+      author_id: session.user.id,
+      parent_id: parent.id,
+      body,
+      title: null,
+      is_feature_request: false,
+    });
+    if (error) { toast('Reply failed: ' + error.message, 'err'); return; }
+    host.innerHTML = '';
+    toast('Reply posted.', 'ok');
+    renderFeed();
+  });
+}
+
+async function handleVote(postId, value) {
+  if (!session) { $('#authModal').classList.add('on'); return; }
+  const current = await sb.from('votes').select('value').eq('post_id', postId).eq('user_id', session.user.id).maybeSingle();
+  const existing = current.data?.value;
+  let resp;
+  if (existing === value) {
+    resp = await sb.from('votes').delete().eq('post_id', postId).eq('user_id', session.user.id);
+  } else if (existing) {
+    resp = await sb.from('votes').update({ value }).eq('post_id', postId).eq('user_id', session.user.id);
+  } else {
+    resp = await sb.from('votes').insert({ post_id: postId, user_id: session.user.id, value });
+  }
+  if (resp.error) { toast('Vote failed: ' + resp.error.message, 'err'); return; }
+  renderFeed();
+}
+
+async function renderFeed() {
+  try {
+    const ctx = await fetchFeed();
+    const feed = $('#feed');
+    feed.innerHTML = '';
+    if (!ctx.tops.length) {
+      feed.innerHTML = `<div class="panel muted" style="text-align:center">No threads yet — be the first to post.</div>`;
+      return;
+    }
+    ctx.tops.forEach(t => feed.appendChild(renderPost(t, ctx, true)));
+  } catch (e) {
+    console.error(e);
+    $('#feed').innerHTML = `<div class="panel muted">Feed error: ${escapeHtml(String(e.message || e))}</div>`;
+  }
+}
+
+// ---------------- Init ----------------
+(async () => {
+  // Supabase picks up ?code=... in URL for PKCE magic link; trigger session refresh after.
+  await refreshSession();
+  sb.auth.onAuthStateChange(async () => {
+    await refreshSession();
+    renderFeed();
+  });
+  await renderFeed();
+})();
+</script>
+</body>
+</html>

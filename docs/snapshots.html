@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Past snapshots — Tesla Robotaxi Scaling Predictor</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0b0d10;
+    --panel: #12161b;
+    --border: #1f262e;
+    --text: #e6e9ee;
+    --muted: #8a94a3;
+    --accent: #4ea3ff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, Segoe UI, Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+  a { color: var(--accent); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 64px; }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  header h1 { font-size: 20px; font-weight: 600; margin: 0; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  header nav { margin-left: auto; font-size: 13px; }
+  header nav a { color: var(--muted); text-decoration: none; margin-left: 14px; }
+  header nav a:hover { color: var(--text); }
+
+  .layout { display: grid; grid-template-columns: 240px 1fr; gap: 18px; }
+  @media (max-width: 720px) { .layout { grid-template-columns: 1fr; } }
+
+  .list { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-height: 640px; overflow: auto; }
+  .list button { display: block; width: 100%; text-align: left; background: transparent; color: var(--text);
+    border: 0; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; font-family: inherit; }
+  .list button:hover { background: rgba(255,255,255,0.04); }
+  .list button.on { background: var(--accent); color: #0b0d10; font-weight: 600; }
+  .list .date { font-variant-numeric: tabular-nums; }
+  .list .sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
+  .list button.on .sub { color: #0b0d10; }
+
+  #chart { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; height: 560px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .card .lbl { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .card .val { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 4px; }
+  .muted { color: var(--muted); font-size: 12px; }
+  .empty { color: var(--muted); text-align: center; padding: 60px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Past snapshots</h1>
+      <div class="sub">Pick a date from the list to see the forecast as it was then.</div>
+    </div>
+    <nav>
+      <a href="./">← Dashboard</a>
+      <a href="community.html">Community</a>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <div class="list" id="list"></div>
+    <div>
+      <div id="chart"></div>
+      <div class="stats" id="stats"></div>
+      <div class="muted" id="caption" style="margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const INDEX_URL = 'data/snapshots/index.json';
+
+async function loadIndex() {
+  const r = await fetch(INDEX_URL + '?t=' + Date.now());
+  if (!r.ok) throw new Error('Failed to load snapshot index');
+  return r.json();
+}
+
+async function loadSnapshot(file) {
+  const r = await fetch(file + '?t=' + Date.now());
+  if (!r.ok) throw new Error('Failed to load snapshot');
+  return r.json();
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function render(snapshot) {
+  const fx = snapshot.forecast_dates || [];
+  const histX = (snapshot.historical || []).map(h => h.date);
+  const histY = (snapshot.historical || []).map(h => h.value);
+
+  const targets = snapshot.targets || [];
+  const thresholdTraces = targets.map(t => ({
+    x: [histX[0] || fx[0], fx[fx.length - 1] || histX[histX.length - 1]],
+    y: [t.value, t.value],
+    mode: 'lines',
+    line: { color: t.color || '#facc15', width: 1.5, dash: 'dot' },
+    name: `${t.label || 'Target'} (${Math.round(t.value).toLocaleString()})`,
+    type: 'scatter',
+  }));
+  const bandOuter = {
+    x: fx.concat(fx.slice().reverse()),
+    y: (snapshot.p95 || []).concat((snapshot.p5 || []).slice().reverse()),
+    fill: 'toself', fillcolor: 'rgba(78, 163, 255, 0.10)', line: { width: 0 },
+    name: 'P5–P95', hoverinfo: 'skip', type: 'scatter',
+  };
+  const bandInner = {
+    x: fx.concat(fx.slice().reverse()),
+    y: (snapshot.p75 || []).concat((snapshot.p25 || []).slice().reverse()),
+    fill: 'toself', fillcolor: 'rgba(78, 163, 255, 0.22)', line: { width: 0 },
+    name: 'P25–P75', hoverinfo: 'skip', type: 'scatter',
+  };
+  const median = {
+    x: fx, y: snapshot.p50 || [], mode: 'lines',
+    line: { color: '#4ea3ff', width: 2, dash: 'dash' }, name: 'Median', type: 'scatter',
+  };
+  const actual = {
+    x: histX, y: histY, mode: 'lines+markers',
+    line: { color: '#e6e9ee', width: 2.5 }, marker: { color: '#e6e9ee', size: 6 },
+    name: 'Actual', type: 'scatter',
+  };
+
+  Plotly.newPlot('chart', [bandOuter, bandInner, median, ...thresholdTraces, actual], {
+    paper_bgcolor: '#12161b', plot_bgcolor: '#12161b',
+    font: { color: '#e6e9ee' },
+    margin: { t: 24, r: 20, b: 40, l: 70 },
+    xaxis: { gridcolor: '#1f262e' },
+    yaxis: { gridcolor: '#1f262e', title: 'Unsupervised robotaxis', type: 'log' },
+    legend: { orientation: 'h', y: -0.14, font: { size: 11 } },
+    hovermode: 'x unified',
+  }, { displaylogo: false, responsive: true });
+
+  const fit = snapshot.fit || {};
+  const etas = snapshot.eta_by_target || {};
+  const latest = (snapshot.historical || [])[snapshot.historical.length - 1]?.value;
+  const cards = [
+    { lbl: 'Snapshot date', val: (snapshot.generated_at || '').slice(0, 10) || '—' },
+    { lbl: 'Latest then', val: latest != null ? Math.round(latest) : '—' },
+    { lbl: 'Weekly growth', val: ((fit.rate_weekly || 0) * 100).toFixed(1) + '%' },
+    { lbl: 'P50 → 1,000', val: etas['1000']?.p50 || '—' },
+    { lbl: 'P50 → 1,800', val: etas['1800']?.p50 || '—' },
+  ];
+  document.getElementById('stats').innerHTML = cards.map(c =>
+    `<div class="card"><div class="lbl">${c.lbl}</div><div class="val">${c.val}</div></div>`
+  ).join('');
+  document.getElementById('caption').textContent = 'Generated ' + (snapshot.generated_at || '').replace('T', ' ').slice(0, 16) + ' UTC';
+}
+
+(async () => {
+  const list = document.getElementById('list');
+  let entries;
+  try {
+    entries = await loadIndex();
+  } catch (e) {
+    list.innerHTML = `<div class="muted" style="padding:12px">No snapshots yet — come back after the first weekly run.</div>`;
+    document.getElementById('chart').innerHTML = '<div class="empty">No snapshots available.</div>';
+    return;
+  }
+  if (!entries.length) {
+    list.innerHTML = `<div class="muted" style="padding:12px">No snapshots yet.</div>`;
+    document.getElementById('chart').innerHTML = '<div class="empty">No snapshots available.</div>';
+    return;
+  }
+  const render_list = (activeDate) => {
+    list.innerHTML = entries.map(e =>
+      `<button data-file="${escapeHtml(e.file)}" data-date="${escapeHtml(e.date)}" class="${e.date === activeDate ? 'on' : ''}">
+         <div class="date">${escapeHtml(e.date)}</div>
+         <div class="sub">${e.latest != null ? e.latest + ' unsup' : '—'} · ${e.weekly_growth_pct != null ? e.weekly_growth_pct.toFixed(1) + '%/wk' : ''}</div>
+       </button>`
+    ).join('');
+    list.querySelectorAll('button').forEach(btn => btn.addEventListener('click', async () => {
+      try {
+        const snap = await loadSnapshot(btn.dataset.file);
+        render(snap);
+        render_list(btn.dataset.date);
+      } catch (e) {
+        document.getElementById('chart').innerHTML = `<div class="empty">Error: ${escapeHtml(e.message)}</div>`;
+      }
+    }));
+  };
+  // Load the most recent by default.
+  const first = entries[0];
+  render_list(first.date);
+  try {
+    const snap = await loadSnapshot(first.file);
+    render(snap);
+  } catch (e) {
+    document.getElementById('chart').innerHTML = `<div class="empty">Error loading snapshot.</div>`;
+  }
+})();
+</script>
+</body>
+</html>
