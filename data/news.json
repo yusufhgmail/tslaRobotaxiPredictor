@@ -10,29 +10,29 @@
   },
   {
     "date": "2026-04-20",
-    "title": "Tesla Deploys Four Unsupervised Robotaxis in Dallas and Houston Post-Launch",
+    "title": "Tesla's Dallas and Houston Robotaxi Fleets Reach Four Vehicles Total",
     "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
-    "summary": "Crowdsourced Robotaxi Tracker data indicates Tesla increased unsupervised vehicles to two each in Dallas and Houston shortly after launch, totaling four, compared to 13 active unsupervised in Austin over the last 30 days.",
+    "summary": "Crowdsourced Robotaxi Tracker data shows Tesla deployed one unsupervised vehicle each in Dallas and Houston at launch on April 18, increasing to two per city by April 20. Austin currently has 13 unsupervised vehicles active in the last 30 days.",
     "impact_score": 1,
-    "impact_reason": "Mildly positive as it demonstrates initial fleet buildup in new geofences, signaling commitment to scaling unsupervised operations outside Austin.",
+    "impact_reason": "Small initial deployments in new cities mark the start of fleet growth outside Austin, providing foundational scaling momentum despite low numbers.",
     "captured_at": "2026-04-23T11:29:02+00:00"
   },
   {
     "date": "2026-04-18",
     "title": "Tesla Expands Unsupervised Robotaxi to Dallas and Houston",
     "url": "https://www.teslarati.com/tesla-expands-unsupervised-robotaxi-service-two-new-cities/",
-    "summary": "Tesla launched unsupervised Robotaxi service in Dallas and Houston, Texas, with initial geofence areas defined and video evidence showing no safety drivers. This triples Tesla's active unsupervised Robotaxi hubs in Texas, building on ongoing operations in Austin.",
-    "impact_score": 3,
-    "impact_reason": "Major positive catalyst as expanding to two additional Texas cities with favorable regulations directly accelerates overall unsupervised fleet scaling velocity beyond Austin by tripling the state's operational footprint in weeks.",
+    "summary": "Tesla launched unsupervised Robotaxi service in Dallas and Houston on April 18, expanding from Austin to three Texas cities with initial geofences of about 25 square miles each. This triples Tesla's active Robotaxi hubs in Texas, aligning with H1 2026 plans for seven U.S. cities.",
+    "impact_score": 2,
+    "impact_reason": "Launching unsupervised service in two major new Texas cities directly accelerates overall fleet scaling velocity by establishing additional operational hubs for rapid data collection and expansion beyond Austin.",
     "captured_at": "2026-04-23T11:38:45+00:00"
   },
   {
-    "date": "2026-02-??",
-    "title": "Tesla Discloses 14 Crashes Involving Austin Robotaxis Since Launch",
+    "date": "2026-04-18",
+    "title": "TechCrunch Reports Tesla Robotaxi Launch in Dallas and Houston",
     "url": "https://techcrunch.com/2026/04/18/tesla-brings-its-robotaxi-service-to-dallas-and-houston/",
-    "summary": "In a February filing, Tesla reported 14 crashes involving its Austin robotaxis since service launch.",
-    "impact_score": -1,
-    "impact_reason": "Mildly negative as disclosed incidents could draw regulatory scrutiny or public concern, potentially slowing unsupervised scaling velocity in Austin.",
+    "summary": "Tesla announced unsupervised Robotaxi rollout in Dallas and Houston, now operating in three Texas cities after Austin launch last year and unsupervised start in January 2026. Tracker data shows one vehicle each in the new cities versus 46 in Austin.",
+    "impact_score": 1,
+    "impact_reason": "Confirms expansion to new cities with unsupervised operations, supporting broader Texas scaling even if initial fleet addition is minimal.",
     "captured_at": "2026-04-23T11:29:02+00:00"
   }
 ]
