@@ -108,16 +108,6 @@
     </nav>
   </header>
 
-  <!-- newsletter standalone signup -->
-  <div class="panel" id="newsletterPanel">
-    <div style="font-weight:600;margin-bottom:4px">📬 Weekly robotaxi update by email</div>
-    <div class="muted" style="margin-bottom:10px">Same summary I send myself every Monday. Opt out with one click anytime.</div>
-    <form id="newsletterForm" class="row">
-      <input type="email" id="newsletterEmail" placeholder="you@example.com" required />
-      <button type="submit">Subscribe</button>
-    </form>
-  </div>
-
   <!-- submit a new top-level post -->
   <div class="panel" id="submitPanel">
     <div style="font-weight:600;margin-bottom:8px">Start a thread</div>
@@ -306,18 +296,6 @@ $('#signOutBtn').addEventListener('click', async () => {
   $('#profileModal').classList.remove('on');
   await refreshSession();
   renderFeed();
-});
-
-// ---------------- Newsletter (standalone) ----------------
-$('#newsletterForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const email = $('#newsletterEmail').value.trim();
-  const { error } = await sb.from('subscribers').insert({ email });
-  if (error && !error.message.includes('duplicate')) {
-    toast('Error: ' + error.message, 'err'); return;
-  }
-  toast("Check your inbox — click the link to confirm.", 'ok');
-  $('#newsletterEmail').value = '';
 });
 
 // ---------------- Submit top-level post ----------------
