@@ -45,7 +45,7 @@ TARGETS = [
 # Back-compat: the scalar `TARGET` is the top threshold used in CLI summary.
 TARGET = TARGETS[-1]["value"]
 METRIC = "unsupervised_cumulative"
-FORECAST_WEEKS = 104
+FORECAST_WEEKS = 88  # horizon ends ~Dec 2027
 N_SAMPLES = 2000
 
 # Weakly informative prior on weekly growth rate r (= Δln(fleet)/week).
