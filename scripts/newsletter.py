@@ -30,11 +30,12 @@ RESEND_URL = "https://api.resend.com/emails"
 FROM = "Robotaxi Predictor <onboarding@resend.dev>"
 
 
-def list_subscribers(supabase_url: str, service_key: str) -> list[str]:
+def list_subscribers(supabase_url: str, service_key: str) -> list[dict]:
+    """Return list of {email, unsubscribe_token} for every confirmed, non-unsubbed row."""
     r = requests.get(
         f"{supabase_url}/rest/v1/subscribers",
         params={
-            "select": "email",
+            "select": "email,unsubscribe_token",
             "confirmed_at": "not.is.null",
             "unsubscribed_at": "is.null",
         },
@@ -46,7 +47,7 @@ def list_subscribers(supabase_url: str, service_key: str) -> list[str]:
         timeout=30,
     )
     r.raise_for_status()
-    return [row["email"] for row in r.json() if row.get("email")]
+    return [row for row in r.json() if row.get("email")]
 
 
 def main() -> int:
@@ -86,9 +87,6 @@ def main() -> int:
         "news_shift_pp": forecast["fit"].get("news_rate_shift", 0.0) * 100,
         "fresh_news": notify.new_news_this_week(news),
     }
-    subject, html, text = notify.render(
-        datetime.now(timezone.utc).strftime("%Y-%m-%d"), ctx
-    )
 
     try:
         subscribers = list_subscribers(supabase_url, service_key)
@@ -102,7 +100,15 @@ def main() -> int:
 
     sent = 0
     failed = 0
-    for email in subscribers:
+    for row in subscribers:
+        email = row["email"]
+        unsub_url = (
+            f"{notify.DASHBOARD_URL}unsubscribe.html?token={row.get('unsubscribe_token', '')}"
+            if row.get("unsubscribe_token") else None
+        )
+        subject, html, text = notify.render(
+            datetime.now(timezone.utc).strftime("%Y-%m-%d"), ctx, unsub_url,
+        )
         try:
             r = requests.post(
                 RESEND_URL,
@@ -118,7 +124,6 @@ def main() -> int:
         except Exception as e:
             failed += 1
             print(f"  ERR  {email}: {e}", file=sys.stderr)
-        # Resend free tier: ~10/sec max; be polite.
         time.sleep(0.15)
 
     print(f"Newsletter: sent={sent} failed={failed} total={len(subscribers)}")

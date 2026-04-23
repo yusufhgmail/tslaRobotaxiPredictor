@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Unsubscribe — Tesla Robotaxi Scaling Predictor</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  :root { color-scheme: dark; --bg:#0b0d10; --panel:#12161b; --border:#1f262e;
+    --text:#e6e9ee; --muted:#8a94a3; --accent:#4ea3ff; --pos:#34d399; --neg:#f87171; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,Segoe UI,Inter,system-ui,sans-serif; font-size:15px; line-height:1.5; }
+  .wrap { max-width:480px; margin:10vh auto 40px; padding:0 20px; text-align:center; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:28px 24px; }
+  h1 { font-size:20px; font-weight:600; margin:0 0 10px; }
+  p { color:var(--muted); margin:6px 0; }
+  .state { font-size:16px; margin-top:14px; font-weight:500; }
+  .ok { color:var(--pos); }
+  .err { color:var(--neg); }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .spin { display:inline-block; width:14px; height:14px; border:2px solid var(--border);
+    border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:-2px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>Unsubscribing…</h1>
+    <p>One moment.</p>
+    <div class="state" id="state"><span class="spin"></span></div>
+    <p style="margin-top:24px"><a href="./">← Back to dashboard</a></p>
+  </div>
+</div>
+<script>
+const SUPABASE_URL = 'https://rpkxxdtgthzrucbnssjj.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_IlSsw8rpBZlWN6riB6KCrA__PdklPUd';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+const params = new URLSearchParams(location.search);
+const token = params.get('token');
+const state = document.getElementById('state');
+
+(async () => {
+  if (!token) {
+    state.innerHTML = '<span class="err">Missing token in the link.</span>';
+    return;
+  }
+  const { data, error } = await sb.rpc('unsubscribe', { p_token: token });
+  if (error) { state.innerHTML = '<span class="err">Error: ' + error.message + '</span>'; return; }
+  if (data && data.ok) {
+    state.innerHTML = "<span class=\"ok\">✓ Unsubscribed <b>" + (data.email || '') +
+      "</b>.</span><br><span style=\"color:var(--muted);font-size:13px\">No more emails. Sorry to see you go.</span>";
+  } else {
+    state.innerHTML = '<span class="err">Invalid or expired link.</span>';
+  }
+})();
+</script>
+</body>
+</html>

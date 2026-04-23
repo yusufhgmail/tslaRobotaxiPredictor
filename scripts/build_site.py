@@ -309,7 +309,7 @@ TEMPLATE = """<!doctype html>
     legend: { orientation: 'h', y: -0.14, font: { size: 11 } },
     hovermode: 'x unified',
   };
-  Plotly.newPlot('chart', chartTraces, chartLayoutBase, { displaylogo: false, responsive: true });
+  Plotly.newPlot('chart', chartTraces, chartLayoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 
   const btnLinear = document.getElementById('scale-linear');
   const btnLog = document.getElementById('scale-log');
@@ -449,7 +449,7 @@ TEMPLATE = """<!doctype html>
     submitBtn.disabled = true;
     msg.textContent = 'Subscribing…';
     msg.className = 'msg';
-    const { error } = await sb.from('subscribers').insert({ email }).select();
+    const { error } = await sb.from('subscribers').insert({ email });
     submitBtn.disabled = false;
     if (error) {
       if (/duplicate|unique/i.test(error.message)) {
@@ -461,7 +461,7 @@ TEMPLATE = """<!doctype html>
       }
       return;
     }
-    msg.textContent = "Subscribed. You'll get the next Monday update.";
+    msg.textContent = "Almost done — check your inbox and click the confirmation link.";
     msg.className = 'msg ok';
     emailInput.value = '';
   });

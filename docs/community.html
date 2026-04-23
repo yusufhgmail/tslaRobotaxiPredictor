@@ -311,11 +311,11 @@ $('#signOutBtn').addEventListener('click', async () => {
 $('#newsletterForm').addEventListener('submit', async e => {
   e.preventDefault();
   const email = $('#newsletterEmail').value.trim();
-  const { error } = await sb.from('subscribers').insert({ email }).select();
+  const { error } = await sb.from('subscribers').insert({ email });
   if (error && !error.message.includes('duplicate')) {
     toast('Error: ' + error.message, 'err'); return;
   }
-  toast("Subscribed. You'll get the next Monday update.", 'ok');
+  toast("Check your inbox — click the link to confirm.", 'ok');
   $('#newsletterEmail').value = '';
 });
 
@@ -333,7 +333,7 @@ $('#postForm').addEventListener('submit', async e => {
   });
   if (pErr) { toast('Post failed: ' + pErr.message, 'err'); return; }
   if (sub) {
-    await sb.from('subscribers').insert({ email: session.user.email, user_id: session.user.id }).select();
+    await sb.from('subscribers').insert({ email: session.user.email, user_id: session.user.id });
   }
   $('#postTitle').value = '';
   $('#postBody').value = '';

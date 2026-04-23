@@ -86,7 +86,7 @@ def new_news_this_week(news: list[dict]) -> list[dict]:
     return fresh
 
 
-def render(subject_suffix: str, ctx: dict) -> tuple[str, str, str]:
+def render(subject_suffix: str, ctx: dict, unsubscribe_url: str | None = None) -> tuple[str, str, str]:
     latest = ctx["latest"]
     delta_text = ctx["delta_text"]
     fit = ctx["fit"]
@@ -176,6 +176,7 @@ def render(subject_suffix: str, ctx: dict) -> tuple[str, str, str]:
   <div style="color:#8a94a3;font-size:11px;margin-top:16px;border-top:1px solid #1f262e;padding-top:10px">
     Generated automatically every Monday 13:00 UTC ·
     <a href="{REPO_URL}" style="color:#8a94a3">source</a>
+    {f'· <a href="{unsubscribe_url}" style="color:#8a94a3">unsubscribe</a>' if unsubscribe_url else ''}
   </div>
 </div>
 </body></html>"""
@@ -191,6 +192,7 @@ def render(subject_suffix: str, ctx: dict) -> tuple[str, str, str]:
         + (f"\nNew this week ({len(fresh_news)}):\n" + "\n".join(news_text_lines) + "\n" if fresh_news else "")
         + f"\nDashboard: {DASHBOARD_URL}\n"
         f"Source: {REPO_URL}\n"
+        + (f"Unsubscribe: {unsubscribe_url}\n" if unsubscribe_url else "")
     )
     return subject, html, text
 
