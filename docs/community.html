@@ -145,6 +145,9 @@
   <div class="panel">
     <div style="font-weight:600;margin-bottom:6px">Sign in / sign up</div>
     <div class="muted" style="margin-bottom:10px">We'll email you a one-click sign-in link. No password.</div>
+    <div id="authDraftNote" style="display:none;background:rgba(52,211,153,0.10);border:1px solid rgba(52,211,153,0.4);color:#34d399;font-size:12px;padding:8px 10px;border-radius:6px;margin-bottom:10px">
+      ✓ Your draft is saved locally — it'll be there when you come back from the magic link.
+    </div>
     <form id="authForm">
       <input type="email" id="authEmail" placeholder="you@example.com" required />
       <div style="height:10px"></div>
@@ -244,7 +247,7 @@ function renderAuthBox() {
     $('#editProfileBtn').addEventListener('click', openProfileModal);
   } else {
     box.innerHTML = `<button id="signInBtn">Sign in</button>`;
-    $('#signInBtn').addEventListener('click', () => $('#authModal').classList.add('on'));
+    $('#signInBtn').addEventListener('click', () => openAuthModal(false));
   }
 }
 
@@ -271,8 +274,12 @@ $('#authForm').addEventListener('submit', async e => {
   toast('Check your inbox for the sign-in link.', 'ok');
   $('#authModal').classList.remove('on');
 });
+function openAuthModal(hasDraft) {
+  $('#authDraftNote').style.display = hasDraft ? 'block' : 'none';
+  $('#authModal').classList.add('on');
+}
 $('#authCancel').addEventListener('click', () => $('#authModal').classList.remove('on'));
-$('#openAuthFromPost').addEventListener('click', e => { e.preventDefault(); $('#authModal').classList.add('on'); });
+$('#openAuthFromPost').addEventListener('click', e => { e.preventDefault(); openAuthModal(!!localStorage.getItem(DRAFT_KEY)); });
 
 // Profile edit
 function openProfileModal() {
@@ -339,7 +346,7 @@ $('#postForm').addEventListener('submit', async e => {
     // Not signed in — keep the draft and open the sign-in modal. After magic
     // link auth finishes, restoreDraft() on the next page load fills it back.
     saveDraft();
-    $('#authModal').classList.add('on');
+    openAuthModal(!!localStorage.getItem(DRAFT_KEY));
     return;
   }
   const title = $('#postTitle').value.trim();
