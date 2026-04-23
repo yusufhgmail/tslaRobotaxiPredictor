@@ -57,6 +57,9 @@
   label input[type=checkbox] { accent-color: var(--accent); }
   .row { display: flex; gap: 10px; align-items: center; }
   .row > *:first-child { flex: 1; }
+  .post-options { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .post-checks { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 220px; }
+  .post-checks label { font-size: 13px; }
   .muted { color: var(--muted); font-size: 12px; }
 
   #authbox { display: flex; align-items: center; gap: 10px; font-size: 13px; }
@@ -116,9 +119,11 @@
       <div style="height:8px"></div>
       <textarea id="postBody" placeholder="What's on your mind? Feature request, question, observation, debate — all welcome." required maxlength="8000"></textarea>
       <div style="height:8px"></div>
-      <div class="row">
-        <label><input type="checkbox" id="postIsFR" /> This is a feature request</label>
-        <label><input type="checkbox" id="postSubscribe" checked /> Also subscribe me to the weekly email</label>
+      <div class="post-options">
+        <div class="post-checks">
+          <label><input type="checkbox" id="postIsFR" /> This is a feature request</label>
+          <label><input type="checkbox" id="postSubscribe" checked /> Also subscribe me to the weekly email</label>
+        </div>
         <button type="submit" id="postSubmitBtn">Post</button>
       </div>
       <div class="muted" id="postNotice" style="margin-top:8px;display:none">You need to sign in to post. <a href="#" id="openAuthFromPost">Sign in</a>.</div>
