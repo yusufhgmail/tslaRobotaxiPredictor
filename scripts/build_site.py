@@ -91,9 +91,9 @@ TEMPLATE = """<!doctype html>
   <div class="grid" id="stats"></div>
   <div class="scale-toggle">
     <span>Y-axis scale:</span>
-    <button id="scale-linear" class="on">Linear</button>
-    <button id="scale-log">Log</button>
-    <span class="hint">Log makes exponentials look linear; linear shows the hockey-stick shape.</span>
+    <button id="scale-log" class="on">Log</button>
+    <button id="scale-linear">Linear</button>
+    <span class="hint">Log: exponentials look linear and the slope = growth rate. Linear: hockey-stick shape.</span>
   </div>
   <div id="chart"></div>
   <div id="newschart"></div>
@@ -208,8 +208,7 @@ TEMPLATE = """<!doctype html>
     yaxis: {
       gridcolor: '#1f262e', zerolinecolor: '#1f262e',
       title: 'Unsupervised robotaxis',
-      type: 'linear',
-      rangemode: 'tozero',
+      type: 'log',
     },
     legend: { orientation: 'h', y: -0.14, font: { size: 11 } },
     hovermode: 'x unified',
