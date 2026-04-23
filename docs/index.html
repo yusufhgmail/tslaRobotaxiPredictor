@@ -67,15 +67,22 @@
   .news-body .reason { color: var(--muted); font-size: 13px; margin-top: 2px; }
   .footer { color: var(--muted); font-size: 12px; margin-top: 28px; text-align: center; }
 
-  /* Subscribe button + modal */
-  .header-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 4px; }
-  .header-row h1 { flex: 1; }
-  .btn-subscribe {
-    background: var(--accent); color: #0b0d10; border: 0; border-radius: 6px;
-    padding: 7px 14px; font-weight: 600; font-size: 13px; cursor: pointer;
-    white-space: nowrap;
+  /* Subscribe + community buttons + modal */
+  .header-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+  .header-row h1 { flex: 1; min-width: 200px; }
+  .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-subscribe, .btn-community {
+    border-radius: 6px; padding: 7px 14px; font-weight: 600; font-size: 13px;
+    cursor: pointer; white-space: nowrap; font-family: inherit;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
   }
+  .btn-subscribe { background: var(--accent); color: #0b0d10; border: 0; }
   .btn-subscribe:hover { filter: brightness(1.08); }
+  .btn-community {
+    background: transparent; color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .btn-community:hover { background: var(--accent); color: #0b0d10; }
   .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none;
     align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
   .modal.on { display: flex; }
@@ -108,13 +115,15 @@
 <div class="wrap">
   <div class="header-row">
     <h1>Tesla Robotaxi Scaling Predictor</h1>
-    <button class="btn-subscribe" id="openSubscribe">📬 Subscribe to weekly updates</button>
+    <div class="header-actions">
+      <a class="btn-community" href="community.html">💬 Community</a>
+      <button class="btn-subscribe" id="openSubscribe">📬 Subscribe</button>
+    </div>
   </div>
   <div class="sub">
     Unsupervised fleet vs. 1,800 re-rating threshold. Data from
     <a href="https://robotaxitracker.com/?provider=tesla&area=austin" target="_blank" rel="noopener">robotaxitracker.com</a>.
     Updated weekly · Last run: <span id="generated">—</span>
-    · <a href="community.html">💬 Community / feature requests</a>
     · <a href="snapshots.html">📅 Past snapshots</a>
   </div>
 
