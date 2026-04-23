@@ -1,23 +1,5 @@
 [
   {
-    "date": "2026-04-23",
-    "title": "SYNTHETIC positive",
-    "url": "https://example.com/s1",
-    "summary": "t",
-    "impact_score": 3,
-    "impact_reason": "test",
-    "captured_at": "2026-04-23T11:02:26+00:00"
-  },
-  {
-    "date": "2026-04-23",
-    "title": "SYNTHETIC minor neg",
-    "url": "https://example.com/s2",
-    "summary": "t",
-    "impact_score": -1,
-    "impact_reason": "test",
-    "captured_at": "2026-04-23T11:02:26+00:00"
-  },
-  {
     "date": "2026-04-20",
     "title": "Dallas and Houston Robotaxi Fleets Grow to 2 Vehicles Each After Launch",
     "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
