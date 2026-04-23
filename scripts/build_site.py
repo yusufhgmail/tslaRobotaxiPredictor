@@ -26,6 +26,7 @@ TEMPLATE = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tesla Robotaxi Scaling Predictor</title>
 <meta name="description" content="Weekly-updated forecast of Tesla's unsupervised robotaxi fleet vs. the 1,800-vehicle re-rating threshold." />
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>

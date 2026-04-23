@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-label="Robotaxi Scaling Predictor">
+  <!-- dark rounded tile -->
+  <rect width="64" height="64" rx="14" fill="#0b0d10"/>
+
+  <!-- subtle growth curve behind the car (scaling cue) -->
+  <path d="M 8 50 Q 22 46 30 36 T 52 18"
+        stroke="#4ea3ff" stroke-width="2.5" fill="none"
+        stroke-linecap="round" opacity="0.35"/>
+
+  <!-- robotaxi body (cybercab-ish wedge) -->
+  <path d="M 14 42 L 18 31 Q 22 27 28 26 L 40 26 Q 46 27 50 31 L 52 42 Z"
+        fill="#e6e9ee"/>
+
+  <!-- dark window strip -->
+  <path d="M 21 31 Q 24 29 28 28 L 40 28 Q 44 29 47 31 Z"
+        fill="#0b0d10"/>
+
+  <!-- wheels -->
+  <circle cx="22" cy="44" r="4.5" fill="#12161b" stroke="#e6e9ee" stroke-width="1.5"/>
+  <circle cx="44" cy="44" r="4.5" fill="#12161b" stroke="#e6e9ee" stroke-width="1.5"/>
+
+  <!-- accent upward-arrow badge (scaling indicator) -->
+  <circle cx="50" cy="14" r="9" fill="#4ea3ff"/>
+  <path d="M 46 16 L 50 10 L 54 16" stroke="#0b0d10"
+        stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
