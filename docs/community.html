@@ -126,7 +126,6 @@
         </div>
         <button type="submit" id="postSubmitBtn">Post</button>
       </div>
-      <div class="muted" id="postNotice" style="margin-top:8px;display:none">You need to sign in to post. <a href="#" id="openAuthFromPost">Sign in</a>.</div>
     </form>
   </div>
 
@@ -253,10 +252,9 @@ function renderAuthBox() {
 
 function updatePostFormVisibility() {
   const signedIn = !!session;
-  $('#postNotice').style.display = signedIn ? 'none' : 'block';
-  // Don't disable the inputs — let people compose their post first, then
-  // prompt for sign-in on submit. Only the "subscribe me" checkbox is
-  // irrelevant when unauthed (it uses session.user.email).
+  // Inputs stay enabled either way — unauthed users can compose, and the
+  // submit handler prompts for sign-in when they hit Post. Only the
+  // "subscribe me" checkbox is irrelevant when unauthed.
   $('#postSubscribe').disabled = !signedIn;
 }
 
@@ -279,7 +277,6 @@ function openAuthModal(hasDraft) {
   $('#authModal').classList.add('on');
 }
 $('#authCancel').addEventListener('click', () => $('#authModal').classList.remove('on'));
-$('#openAuthFromPost').addEventListener('click', e => { e.preventDefault(); openAuthModal(!!localStorage.getItem(DRAFT_KEY)); });
 
 // Profile edit
 function openProfileModal() {
