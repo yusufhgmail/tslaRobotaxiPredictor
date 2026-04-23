@@ -1,0 +1,64 @@
+name: Weekly robotaxi update
+
+on:
+  schedule:
+    # Every Monday at 13:00 UTC (~09:00 ET / 08:00 CT Austin).
+    - cron: "0 13 * * 1"
+  workflow_dispatch: {}   # allow manual runs
+
+permissions:
+  contents: write   # to commit updated data
+  pages: write      # to publish
+  id-token: write   # to publish via OIDC
+
+concurrency:
+  group: weekly-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Scrape latest snapshot
+        run: python scripts/scrape.py
+
+      - name: Fetch & score news
+        env:
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+        run: python scripts/news.py
+
+      - name: Run forecast
+        run: python scripts/forecast.py
+
+      - name: Build site
+        run: python scripts/build_site.py
+
+      - name: Commit data + site changes
+        run: |
+          git config user.name "robotaxi-bot"
+          git config user.email "robotaxi-bot@users.noreply.github.com"
+          git add data/ docs/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: weekly update $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
