@@ -40,10 +40,11 @@ FORECAST_JSON = ROOT / "data" / "forecast.json"
 
 TARGET = 1800.0
 # "Robotaxi count" for re-rating purposes means UNSUPERVISED vehicles only
-# (no safety driver). Total fleet / test vehicles are tracked in history.csv
-# but not forecast against the 1,800 threshold.
-METRIC = "unsupervised"
-FORECAST_WEEKS = 104  # 2 years — unsupervised growth is steeper off a smaller base
+# (no safety driver). The history CSV now stores one row per day with a
+# cumulative count derived from each vehicle's first_unsupervised_spotted
+# timestamp, so we have the full growth curve from launch through today.
+METRIC = "unsupervised_cumulative"
+FORECAST_WEEKS = 104  # 2 years — unsupervised growth is steeper off a small base
 N_SAMPLES = 2000
 
 # Weakly informative prior on weekly growth rate r (= Δln(fleet)/week).
@@ -55,23 +56,39 @@ PRIOR_R_SD = 0.10
 
 
 def load_history() -> list[dict]:
+    """Load daily history from CSV.
+
+    History rows live at day-granularity; we key off the `date` column and
+    fabricate a timestamp at UTC midnight so downstream math stays uniform.
+    Days before the first non-zero value are dropped so the log-scale fit
+    doesn't crash.
+    """
     if not HISTORY_CSV.exists():
         return []
     with HISTORY_CSV.open("r", newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
     out = []
+    started = False
     for r in rows:
         val = r.get(METRIC)
         if val in (None, "", "None"):
             continue
         try:
-            out.append({
-                "date": r["timestamp_utc"][:10],
-                "timestamp": r["timestamp_utc"],
-                "value": float(val),
-            })
-        except (ValueError, KeyError):
+            v = float(val)
+        except ValueError:
             continue
+        if not started:
+            if v <= 0:
+                continue
+            started = True
+        d = r.get("date") or r.get("timestamp_utc", "")[:10]
+        if not d:
+            continue
+        out.append({
+            "date": d,
+            "timestamp": f"{d}T00:00:00+00:00",
+            "value": v,
+        })
     out.sort(key=lambda d: d["timestamp"])
     return out
 

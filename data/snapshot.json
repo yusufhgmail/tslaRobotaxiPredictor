@@ -1,0 +1,42 @@
+{
+  "fetched_at": "2026-04-23T11:23:12+00:00",
+  "totalVehiclesCount": 96.0,
+  "totalVehiclesCountWithTest": 132.0,
+  "recentVehiclesCount30d": 45.0,
+  "unsupervisedPassengerCount": 13.0,
+  "cybercabCount": 36.0,
+  "deprecatedCount": 51.0,
+  "unsupervisedRideShareWindows": {
+    "30d": {
+      "percent": 25.97864768683274,
+      "startDate": "2026-03-24",
+      "totalTrips": 281.0,
+      "unsupervisedTrips": 73.0
+    },
+    "7d": {
+      "percent": 40.0,
+      "startDate": "2026-04-16",
+      "totalTrips": 50.0,
+      "unsupervisedTrips": 20.0
+    },
+    "90d": {
+      "percent": 13.229571984435799,
+      "startDate": "2026-01-23",
+      "totalTrips": 1028.0,
+      "unsupervisedTrips": 136.0
+    },
+    "since_launch": {
+      "percent": 12.95238095238095,
+      "startDate": "2026-01-22",
+      "totalTrips": 1050.0,
+      "unsupervisedTrips": 136.0
+    }
+  },
+  "unsupervisedRideShareSince": {
+    "percent": 12.95238095238095,
+    "startDate": "2026-01-22",
+    "totalTrips": 1050.0,
+    "unsupervisedTrips": 136.0
+  },
+  "vehicles_returned": 96
+}

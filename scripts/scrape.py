@@ -1,145 +1,178 @@
 """
-Scrape Tesla Austin robotaxi counts from robotaxitracker.com.
+Pull Tesla Austin robotaxi data from robotaxitracker.com.
 
-The site is a Next.js App Router SPA backed by Convex. Data for the initial
-page render is streamed through `self.__next_f.push([1, "..."])` calls in the
-HTML. We reconstruct that stream and pull the fleet metrics out of the
-`getHomepageData` query blob.
+The site is backed by Convex and exposes a public HTTP query endpoint. We call
+the same `queries/fleet:getHomepageData` function the homepage uses, but with
+vehicleLimit=500 so we get the full fleet list. Each vehicle carries a
+`first_unsupervised_spotted` timestamp — that lets us reconstruct the full
+daily cumulative-unsupervised-fleet curve from launch (2026-01-22) through
+today, rather than only collecting one new point per weekly run.
 
-Metrics captured per snapshot:
-- total_vehicles: `totalVehiclesCount` (non-test vehicles ever spotted)
-- total_with_test: `totalVehiclesCountWithTest` (includes cybercabs etc.)
-- active_30d: `recentVehiclesCount30d` (seen in last 30 days)
-- unsupervised: `unsupervisedPassengerCount` (no safety driver)
-- cybercabs: `cybercabCount`
-- deprecated: `deprecatedCount`
+Outputs
+-------
+- `data/history.csv` — one row per day from the first activation through today.
+  Columns: date, unsupervised_cumulative, unsupervised_first_spotted_count,
+  total_vehicles_current, total_with_test_current, active_30d_current,
+  cybercabs_current, source ("reconstructed" | "snapshot").
+  The "_current" fields are the same across all rows in a single run because
+  we only have today's current-totals snapshot; they're kept for context.
+- `data/snapshot.json` — the raw Convex response so downstream code can read
+  fresh metrics without re-querying.
 
-The "total robotaxis" metric used downstream is `total_with_test` by default
-(switchable in the chart).
+Run weekly (or whenever). The history CSV is rewritten from scratch every run
+because the Convex data may update retroactively (newly-discovered past
+activations backfill into earlier dates).
 """
 from __future__ import annotations
 
 import csv
 import json
-import os
-import re
 import sys
-from datetime import datetime, timezone
+from collections import Counter
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
 
-URL = "https://robotaxitracker.com/?provider=tesla&area=austin"
-USER_AGENT = "Mozilla/5.0 (RobotaxiScalingPredictor/1.0)"
+CONVEX_URL = "https://graceful-eel-151.convex.cloud/api/query"
+QUERY_PATH = "queries/fleet:getHomepageData"
+# Tesla Austin service area ID — discovered by inspecting the SSR payload.
+SERVICE_AREA_ID = "jx72bv82f8vfhp6n2hcd5ynq4h7yz7rn"
+VEHICLE_LIMIT = 500
 
-HISTORY_CSV = Path(__file__).resolve().parent.parent / "data" / "history.csv"
+ROOT = Path(__file__).resolve().parent.parent
+HISTORY_CSV = ROOT / "data" / "history.csv"
+SNAPSHOT_JSON = ROOT / "data" / "snapshot.json"
 
 FIELDS = [
-    "timestamp_utc",
-    "total_vehicles",
-    "total_with_test",
-    "active_30d",
-    "unsupervised",
-    "cybercabs",
-    "deprecated",
-    "unsupervised_percent_7d",
-    "unsupervised_percent_30d",
-    "unsupervised_percent_since_launch",
+    "date",
+    "unsupervised_cumulative",
+    "unsupervised_new_that_day",
+    "total_vehicles_current",
+    "total_with_test_current",
+    "active_30d_current",
+    "cybercabs_current",
+    "source",
 ]
 
 
-def fetch_html(url: str = URL) -> str:
-    r = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
-    r.raise_for_status()
-    return r.text
-
-
-def extract_rsc_stream(html: str) -> str:
-    """Concatenate all __next_f.push payloads back into the RSC stream."""
-    pushes = re.findall(r"self\.__next_f\.push\(\[\d+,(\".*?\")\]\)", html, re.S)
-    stream = ""
-    for p in pushes:
-        try:
-            stream += json.loads(p)
-        except json.JSONDecodeError:
-            continue
-    if not stream:
-        raise RuntimeError("No __next_f.push payload found — page structure changed?")
-    return stream
-
-
-_NUM = r"-?\d+(?:\.\d+)?"
-
-
-def _find_number(stream: str, key: str) -> float | None:
-    m = re.search(rf'"{re.escape(key)}":({_NUM})', stream)
-    return float(m.group(1)) if m else None
-
-
-def _find_percent(stream: str, window: str) -> float | None:
-    """Pull unsupervisedRideShareWindows[window].percent."""
-    # Anchor on the window key then grab the next "percent":N value.
-    m = re.search(
-        rf'"{re.escape(window)}":\{{[^{{}}]*?"percent":({_NUM})', stream
+def fetch() -> dict:
+    r = requests.post(
+        CONVEX_URL,
+        json={
+            "path": QUERY_PATH,
+            "args": {
+                "provider": "tesla",
+                "serviceAreaId": SERVICE_AREA_ID,
+                "sortBy": "recently_discovered",
+                "tripLimit": 1,
+                "vehicleLimit": VEHICLE_LIMIT,
+            },
+            "format": "json",
+        },
+        headers={"User-Agent": "RobotaxiScalingPredictor/1.0"},
+        timeout=30,
     )
-    return float(m.group(1)) if m else None
+    r.raise_for_status()
+    body = r.json()
+    if "value" not in body:
+        raise RuntimeError(f"Unexpected Convex response: {body!r}")
+    return body["value"]
 
 
-def parse_metrics(stream: str) -> dict:
-    metrics = {
-        "total_vehicles": _find_number(stream, "totalVehiclesCount"),
-        "total_with_test": _find_number(stream, "totalVehiclesCountWithTest"),
-        "active_30d": _find_number(stream, "recentVehiclesCount30d"),
-        "unsupervised": _find_number(stream, "unsupervisedPassengerCount"),
-        "cybercabs": _find_number(stream, "cybercabCount"),
-        "deprecated": _find_number(stream, "deprecatedCount"),
-        "unsupervised_percent_7d": _find_percent(stream, "7d"),
-        "unsupervised_percent_30d": _find_percent(stream, "30d"),
-        "unsupervised_percent_since_launch": _find_percent(stream, "since_launch"),
-    }
-    # Require the core count so we fail loudly when scraping breaks.
-    if metrics["total_with_test"] is None and metrics["total_vehicles"] is None:
-        raise RuntimeError("Could not extract vehicle counts — page structure changed?")
-    return metrics
+def daily_rows(data: dict) -> list[dict]:
+    """Reconstruct daily unsupervised cumulative counts."""
+    vehicles = data.get("vehicles", [])
+    dates_with_unsup = [
+        v["first_unsupervised_spotted"][:10]
+        for v in vehicles
+        if v.get("first_unsupervised_spotted")
+    ]
+    if not dates_with_unsup:
+        # No unsupervised history yet — return just today with zeros.
+        today = datetime.now(timezone.utc).date()
+        return [{
+            "date": today.isoformat(),
+            "unsupervised_cumulative": 0,
+            "unsupervised_new_that_day": 0,
+            "total_vehicles_current": int(data.get("totalVehiclesCount", 0) or 0),
+            "total_with_test_current": int(data.get("totalVehiclesCountWithTest", 0) or 0),
+            "active_30d_current": int(data.get("recentVehiclesCount30d", 0) or 0),
+            "cybercabs_current": int(data.get("cybercabCount", 0) or 0),
+            "source": "snapshot",
+        }]
+
+    activations = Counter(dates_with_unsup)
+    first = date.fromisoformat(min(dates_with_unsup))
+    today = datetime.now(timezone.utc).date()
+    rows = []
+    cumulative = 0
+    d = first
+    total_vehicles_now = int(data.get("totalVehiclesCount", 0) or 0)
+    total_with_test_now = int(data.get("totalVehiclesCountWithTest", 0) or 0)
+    active_30d_now = int(data.get("recentVehiclesCount30d", 0) or 0)
+    cybercabs_now = int(data.get("cybercabCount", 0) or 0)
+    while d <= today:
+        iso = d.isoformat()
+        new_today = activations.get(iso, 0)
+        cumulative += new_today
+        rows.append({
+            "date": iso,
+            "unsupervised_cumulative": cumulative,
+            "unsupervised_new_that_day": new_today,
+            # Historical rows share today's totals (we only have today's
+            # snapshot for those metrics). The forecast module keys off
+            # `unsupervised_cumulative` so this is fine.
+            "total_vehicles_current": total_vehicles_now,
+            "total_with_test_current": total_with_test_now,
+            "active_30d_current": active_30d_now,
+            "cybercabs_current": cybercabs_now,
+            "source": "reconstructed" if d < today else "snapshot",
+        })
+        d += timedelta(days=1)
+    return rows
 
 
-def load_history() -> list[dict]:
-    if not HISTORY_CSV.exists():
-        return []
-    with HISTORY_CSV.open("r", newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
-
-
-def append_snapshot(metrics: dict) -> dict:
+def write_history(rows: list[dict]) -> None:
     HISTORY_CSV.parent.mkdir(parents=True, exist_ok=True)
-    ts = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
-    row = {"timestamp_utc": ts, **{k: metrics.get(k) for k in FIELDS if k != "timestamp_utc"}}
-
-    existing = load_history()
-    today = ts[:10]
-    existing = [r for r in existing if not r["timestamp_utc"].startswith(today)]
-    existing.append(row)
-    existing.sort(key=lambda r: r["timestamp_utc"])
-
     with HISTORY_CSV.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=FIELDS)
         w.writeheader()
-        for r in existing:
+        for r in rows:
             w.writerow(r)
-    return row
 
 
 def main() -> int:
     try:
-        html = fetch_html()
-        stream = extract_rsc_stream(html)
-        metrics = parse_metrics(stream)
+        data = fetch()
     except Exception as e:
-        print(f"ERROR: scrape failed: {e}", file=sys.stderr)
+        print(f"ERROR: Convex fetch failed: {e}", file=sys.stderr)
         return 1
 
-    row = append_snapshot(metrics)
-    print(json.dumps(row, indent=2))
+    snapshot = {
+        "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "totalVehiclesCount": data.get("totalVehiclesCount"),
+        "totalVehiclesCountWithTest": data.get("totalVehiclesCountWithTest"),
+        "recentVehiclesCount30d": data.get("recentVehiclesCount30d"),
+        "unsupervisedPassengerCount": data.get("unsupervisedPassengerCount"),
+        "cybercabCount": data.get("cybercabCount"),
+        "deprecatedCount": data.get("deprecatedCount"),
+        "unsupervisedRideShareWindows": data.get("unsupervisedRideShareWindows"),
+        "unsupervisedRideShareSince": data.get("unsupervisedRideShareSince"),
+        "vehicles_returned": len(data.get("vehicles", [])),
+    }
+    SNAPSHOT_JSON.parent.mkdir(parents=True, exist_ok=True)
+    SNAPSHOT_JSON.write_text(json.dumps(snapshot, indent=2), encoding="utf-8")
+
+    rows = daily_rows(data)
+    write_history(rows)
+
+    last = rows[-1]
+    print(f"History: {len(rows)} days ({rows[0]['date']} to {rows[-1]['date']})")
+    print(f"Latest unsupervised cumulative: {last['unsupervised_cumulative']}")
+    print(f"Current totals — unsup: {snapshot['unsupervisedPassengerCount']}, "
+          f"total w/ test: {snapshot['totalVehiclesCountWithTest']}, "
+          f"cybercabs: {snapshot['cybercabCount']}")
     return 0
 
 
