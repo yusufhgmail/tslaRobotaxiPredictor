@@ -60,6 +60,13 @@ TEMPLATE = """<!doctype html>
   #chart, #newschart { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; }
   #chart { height: 520px; margin-bottom: 6px; }
   #newschart { height: 180px; }
+  .scale-toggle { display: flex; align-items: center; gap: 8px; margin: 4px 0 10px; font-size: 12px; color: var(--muted); }
+  .scale-toggle button {
+    background: var(--panel); color: var(--muted); border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px;
+  }
+  .scale-toggle button.on { background: var(--accent); color: #0b0d10; border-color: var(--accent); }
+  .scale-toggle .hint { margin-left: auto; font-size: 11px; opacity: 0.7; }
   .news-list { margin-top: 18px; }
   .news-item { display: grid; grid-template-columns: 88px 44px 1fr; gap: 10px; padding: 10px 12px; border-top: 1px solid var(--border); }
   .news-item:first-child { border-top: 0; }
@@ -82,6 +89,12 @@ TEMPLATE = """<!doctype html>
   </div>
 
   <div class="grid" id="stats"></div>
+  <div class="scale-toggle">
+    <span>Y-axis scale:</span>
+    <button id="scale-linear" class="on">Linear</button>
+    <button id="scale-log">Log</button>
+    <span class="hint">Log makes exponentials look linear; linear shows the hockey-stick shape.</span>
+  </div>
   <div id="chart"></div>
   <div id="newschart"></div>
 
@@ -185,20 +198,37 @@ TEMPLATE = """<!doctype html>
     type: 'scatter',
   }));
 
-  Plotly.newPlot('chart', [bandOuter, bandInner, ...sampleTraces, median, ...thresholdTraces, actual], {
+  const chartTraces = [bandOuter, bandInner, ...sampleTraces, median, ...thresholdTraces, actual];
+  const chartLayoutBase = {
     paper_bgcolor: '#12161b',
     plot_bgcolor: '#12161b',
     font: { color: '#e6e9ee', family: 'Inter, system-ui, sans-serif' },
-    margin: { t: 24, r: 20, b: 40, l: 60 },
+    margin: { t: 24, r: 20, b: 40, l: 70 },
     xaxis: { gridcolor: '#1f262e', zerolinecolor: '#1f262e', title: '' },
     yaxis: {
       gridcolor: '#1f262e', zerolinecolor: '#1f262e',
       title: 'Unsupervised robotaxis',
-      type: 'log',
+      type: 'linear',
+      rangemode: 'tozero',
     },
     legend: { orientation: 'h', y: -0.14, font: { size: 11 } },
     hovermode: 'x unified',
-  }, { displaylogo: false, responsive: true });
+  };
+  Plotly.newPlot('chart', chartTraces, chartLayoutBase, { displaylogo: false, responsive: true });
+
+  const btnLinear = document.getElementById('scale-linear');
+  const btnLog = document.getElementById('scale-log');
+  function setScale(mode) {
+    btnLinear.classList.toggle('on', mode === 'linear');
+    btnLog.classList.toggle('on', mode === 'log');
+    Plotly.relayout('chart', {
+      'yaxis.type': mode,
+      'yaxis.rangemode': mode === 'linear' ? 'tozero' : 'normal',
+      'yaxis.autorange': true,
+    });
+  }
+  btnLinear.addEventListener('click', () => setScale('linear'));
+  btnLog.addEventListener('click', () => setScale('log'));
 
   // ---------- news timeline (below main chart) ----------
   const news = (data.news || []).slice().sort((a, b) => a.date.localeCompare(b.date));
