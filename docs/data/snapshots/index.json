@@ -3,9 +3,9 @@
     "date": "2026-04-23",
     "file": "data/snapshots/2026-04-23.json",
     "latest": 13.0,
-    "weekly_growth_pct": 15.38,
-    "eta_1000": "2026-11-12",
-    "eta_1800": "2026-12-10",
+    "weekly_growth_pct": 14.89,
+    "eta_1000": "2026-11-19",
+    "eta_1800": "2026-12-17",
     "n_points": 92
   }
 ]
