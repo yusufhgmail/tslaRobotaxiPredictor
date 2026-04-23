@@ -96,6 +96,8 @@
   .toast.on { display: block; }
   .toast.ok { border-color: var(--pos); color: var(--pos); }
   .toast.err { border-color: var(--neg); color: var(--neg); }
+  .msg.ok { color: var(--pos); }
+  .msg.err { color: var(--neg); }
 </style>
 </head>
 <body>
@@ -168,7 +170,7 @@
       <input type="text" id="profDisplay" maxlength="50" required />
       <div style="height:10px"></div>
       <label style="display:block;margin-bottom:4px;color:var(--muted)">X / Twitter handle (optional)</label>
-      <input type="text" id="profX" maxlength="15" placeholder="without the @" />
+      <input type="text" id="profX" placeholder="yusufyoung (no @, no URL)" />
       <div style="height:10px"></div>
       <label style="display:block;margin-bottom:4px;color:var(--muted)">LinkedIn URL (optional)</label>
       <input type="url" id="profLinkedin" placeholder="https://linkedin.com/in/..." />
@@ -180,6 +182,7 @@
           <button type="submit">Save</button>
         </div>
       </div>
+      <div class="msg" id="profileMsg" style="margin-top:10px;font-size:12px;min-height:16px"></div>
     </form>
   </div>
 </div>
@@ -288,13 +291,34 @@ function openProfileModal() {
 $('#profileCancel').addEventListener('click', () => $('#profileModal').classList.remove('on'));
 $('#profileForm').addEventListener('submit', async e => {
   e.preventDefault();
+  // Normalise user input to match DB check constraints before sending.
+  const xRaw = $('#profX').value.trim().replace(/^@/, '').replace(/^https?:\/\/(?:www\.)?(?:x|twitter)\.com\//i, '').replace(/\/$/, '');
+  const linkedInRaw = $('#profLinkedin').value.trim();
   const patch = {
     display_name: $('#profDisplay').value.trim(),
-    x_handle: $('#profX').value.trim() || null,
-    linkedin_url: $('#profLinkedin').value.trim() || null,
+    x_handle: xRaw || null,
+    linkedin_url: linkedInRaw || null,
   };
-  const { error } = await sb.from('profiles').update(patch).eq('id', session.user.id);
-  if (error) { toast('Save failed: ' + error.message, 'err'); return; }
+  const msgEl = $('#profileMsg');
+  msgEl.textContent = 'Saving…';
+  msgEl.className = 'msg';
+  const { error, data } = await sb.from('profiles').update(patch).eq('id', session.user.id).select();
+  if (error) {
+    const friendly = /x_handle/.test(error.message)
+        ? 'X handle must be 1–15 letters/numbers/underscores (no @, no spaces).'
+      : /linkedin/.test(error.message)
+        ? 'LinkedIn URL must start with https://…linkedin.com/'
+      : error.message;
+    msgEl.textContent = 'Save failed: ' + friendly;
+    msgEl.className = 'msg err';
+    toast('Save failed: ' + friendly, 'err');
+    return;
+  }
+  if (!data || !data.length) {
+    msgEl.textContent = 'Profile row missing — try signing out and back in.';
+    msgEl.className = 'msg err';
+    return;
+  }
   toast('Saved.', 'ok');
   $('#profileModal').classList.remove('on');
   await refreshSession();
