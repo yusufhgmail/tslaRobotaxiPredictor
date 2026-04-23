@@ -1,14 +1,5 @@
 [
   {
-    "date": "2026-04-21",
-    "title": "Austin Robotaxi Fleet Hits 10 Unsupervised Model Ys",
-    "url": "https://www.basenor.com/blogs/news/tesla-austin-robotaxi-fleet-hits-10-unsupervised-model-ys",
-    "summary": "Tesla's Austin unsupervised Robotaxi fleet reached 10 Model Y vehicles, the highest confirmed count to date. This reflects ongoing ramp-up in the primary Texas hub.",
-    "impact_score": 1,
-    "impact_reason": "Demonstrates continued fleet growth in Austin to a record 10 vehicles, supporting steady unsupervised scaling velocity in the core operational area.",
-    "captured_at": "2026-04-23T11:29:02+00:00"
-  },
-  {
     "date": "2026-04-20",
     "title": "Dallas and Houston Robotaxi Fleets Reach Two Unsupervised Vehicles Each",
     "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
@@ -19,12 +10,30 @@
   },
   {
     "date": "2026-04-18",
-    "title": "Tesla Expands Unsupervised Robotaxi to Dallas and Houston",
+    "title": "Tesla Launches Unsupervised Robotaxi Service in Dallas and Houston",
     "url": "https://www.teslarati.com/tesla-expands-unsupervised-robotaxi-service-two-new-cities/",
-    "summary": "Tesla launched unsupervised Robotaxi service in Dallas and Houston on April 18, with geofence maps for initial service areas and video evidence of no safety driver. This triples Texas hubs alongside Austin, aligning with H1 2026 seven-city rollout plans.",
+    "summary": "Tesla announced unsupervised robotaxi service rollout in Dallas and Houston on April 18, expanding its Texas footprint to three active cities with initial geofences of roughly 25 square miles each. The expansion demonstrates rapid scaling of unsupervised operations and aligns with the company's H1 2026 plan to launch across seven U.S. cities including Phoenix, Miami, Orlando, Tampa, and Las Vegas.",
     "impact_score": 2,
-    "impact_reason": "Expansion to two new Texas cities directly boosts regional scaling infrastructure and data collection for Austin fleet growth, though initial deployments are small.",
+    "impact_reason": "Clear positive catalyst showing geographic diversification of unsupervised robotaxi operations beyond Austin, establishing Texas as a major deployment hub and validating the scaling model for future rollouts, though absolute fleet sizes in new cities remain minimal (1-2 vehicles each).",
     "captured_at": "2026-04-23T11:38:45+00:00"
+  },
+  {
+    "date": "2026-04-18",
+    "title": "Tesla Deploys Minimal Fleet in Dallas and Houston Launches",
+    "url": "https://www.eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
+    "summary": "Crowdsourced tracking data shows Tesla deployed only one unsupervised vehicle in each of Dallas and Houston at launch, expanding to two vehicles per city by Tuesday morning, compared to 13 active unsupervised vehicles in Austin. The Bay Area fleet remains significantly larger at over 500 vehicles.",
+    "impact_score": 0,
+    "impact_reason": "While geographically significant, the extremely limited vehicle deployment (2 per city) reveals slow absolute scaling velocity and suggests Austin remains the primary unsupervised testing ground, making this a neutral operational reality check rather than a meaningful acceleration catalyst.",
+    "captured_at": "2026-04-23T13:41:43+00:00"
+  },
+  {
+    "date": "2026-04-15",
+    "title": "Tesla Austin Unsupervised Fleet Reaches 10 Model Ys",
+    "url": "https://www.basenor.com/blogs/news/tesla-austin-robotaxi-fleet-hits-10-unsupervised-model-ys",
+    "summary": "Tesla's Austin robotaxi fleet achieved 10 unsupervised Model Y vehicles, marking the highest confirmed count of driverless vehicles in the service.",
+    "impact_score": 1,
+    "impact_reason": "Mildly positive incremental progress in Austin unsupervised fleet growth, but the modest absolute number (10 vehicles) remains far below stated targets and demonstrates slow scaling velocity for the flagship market.",
+    "captured_at": "2026-04-23T11:29:02+00:00"
   },
   {
     "date": "2026-04-15",
