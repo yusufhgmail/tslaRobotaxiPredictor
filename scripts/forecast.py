@@ -39,15 +39,19 @@ NEWS_JSON = ROOT / "data" / "news.json"
 FORECAST_JSON = ROOT / "data" / "forecast.json"
 
 TARGET = 1800.0
-METRIC = "total_with_test"  # what we forecast
-FORECAST_WEEKS = 52
+# "Robotaxi count" for re-rating purposes means UNSUPERVISED vehicles only
+# (no safety driver). Total fleet / test vehicles are tracked in history.csv
+# but not forecast against the 1,800 threshold.
+METRIC = "unsupervised"
+FORECAST_WEEKS = 104  # 2 years — unsupervised growth is steeper off a smaller base
 N_SAMPLES = 2000
 
-# Weakly informative prior on weekly growth rate r (= ln(fleet)/week).
-# 5% weekly ≈ 13x/year; 15% weekly ≈ 2100x/year. Tesla's public statements
-# imply aggressive ramp, so center on ~10% with wide spread.
-PRIOR_R_MEAN = 0.10
-PRIOR_R_SD = 0.08
+# Weakly informative prior on weekly growth rate r (= Δln(fleet)/week).
+# Unsupervised fleet launched 2026-01-22 and is scaling from a small base,
+# so center on ~15% weekly (doubles every ~4.6 weeks) with wide spread until
+# real data dominates the fit.
+PRIOR_R_MEAN = 0.15
+PRIOR_R_SD = 0.10
 
 
 def load_history() -> list[dict]:

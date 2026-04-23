@@ -1,6 +1,6 @@
 # Tesla Robotaxi Scaling Predictor
 
-A weekly-updated dashboard that tracks the Tesla robotaxi fleet in Austin, projects future scaling as a probabilistic "fuzzy cloud", and overlays news with LLM-scored impact on the trajectory. The goal: predict when the fleet crosses the **1,800-vehicle re-rating threshold**.
+A weekly-updated dashboard that tracks Tesla's **unsupervised** (no-safety-driver) robotaxi fleet in Austin, projects future scaling as a probabilistic "fuzzy cloud", and overlays news with LLM-scored impact on the trajectory. The goal: predict when the unsupervised fleet crosses the **1,800-vehicle re-rating threshold**.
 
 **Live chart:** `https://<your-github-username>.github.io/<this-repo>/` (once GitHub Pages is enabled — see setup below).
 
@@ -45,7 +45,7 @@ Then open `docs/index.html`.
 ## Tuning
 
 Edit `scripts/forecast.py`:
-- `METRIC` — which history column to forecast. Default is `total_with_test` (fleet incl. test vehicles). Change to `unsupervised`, `total_vehicles`, or `active_30d` as needed.
+- `METRIC` — which history column to forecast. Default is `unsupervised` (what the 1,800 re-rating thesis is actually about). Can be switched to `total_with_test`, `total_vehicles`, or `active_30d` if you want a different view.
 - `TARGET` — the re-rating threshold (default 1800).
 - `PRIOR_R_MEAN` / `PRIOR_R_SD` — prior on weekly growth when data is sparse.
 - `FORECAST_WEEKS` — horizon (default 52).

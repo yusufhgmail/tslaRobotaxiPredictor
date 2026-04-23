@@ -76,7 +76,7 @@ TEMPLATE = """<!doctype html>
 <div class="wrap">
   <h1>Tesla Robotaxi Scaling Predictor — Austin</h1>
   <div class="sub">
-    Total fleet vs. 1,800 re-rating threshold. Data from
+    Unsupervised fleet vs. 1,800 re-rating threshold. Data from
     <a href="https://robotaxitracker.com/?provider=tesla&area=austin" target="_blank" rel="noopener">robotaxitracker.com</a>.
     Updated weekly · Last run: <span id="generated">—</span>
   </div>
@@ -104,7 +104,7 @@ TEMPLATE = """<!doctype html>
   const fmt = n => n == null ? '—' : (Math.round(n * 100) / 100).toLocaleString();
   const latest = data.historical.length ? data.historical[data.historical.length - 1].value : null;
   const cards = [
-    { lbl: 'Latest total', val: fmt(latest), foot: data.historical.length ? data.historical[data.historical.length - 1].date : '' },
+    { lbl: 'Unsupervised fleet', val: fmt(latest), foot: data.historical.length ? data.historical[data.historical.length - 1].date : '' },
     { lbl: 'Target', val: Math.round(data.target).toLocaleString(), foot: 're-rating threshold' },
     { lbl: 'Fitted weekly growth', val: ((fit.rate_weekly || 0) * 100).toFixed(1) + '%', foot: fit.prior_dominated ? 'prior-dominated (' + fit.n_points + ' pts)' : 'n=' + fit.n_points },
     { lbl: 'Annualized', val: (fit.annualized_growth_pct || 0).toLocaleString(undefined, { maximumFractionDigits: 0 }) + '%', foot: fit.doubling_weeks ? `doubles ~${fit.doubling_weeks.toFixed(1)}w` : '' },
@@ -182,7 +182,7 @@ TEMPLATE = """<!doctype html>
     xaxis: { gridcolor: '#1f262e', zerolinecolor: '#1f262e', title: '' },
     yaxis: {
       gridcolor: '#1f262e', zerolinecolor: '#1f262e',
-      title: 'Total robotaxis (incl. test)',
+      title: 'Unsupervised robotaxis',
       type: 'log',
     },
     legend: { orientation: 'h', y: -0.14, font: { size: 11 } },
