@@ -8,10 +8,6 @@ and inlines the forecast payload. It has:
 - fuzzy forecast cloud (p5–p95 band, p25–p75 band, p50 median)
 - subsampled trajectory lines (faint)
 - news markers plotted beneath the chart by date, coloured by impact
-
-Visual identity: Tesla-inspired (black, white, Tesla red #e31937, wide-
-letterspaced Inter wordmark). Independent tracker — not affiliated with
-Tesla, Inc.
 """
 from __future__ import annotations
 
@@ -31,238 +27,130 @@ TEMPLATE = """<!doctype html>
 <title>Tesla Robotaxi Scaling Predictor</title>
 <meta name="description" content="Weekly-updated forecast of Tesla's unsupervised robotaxi fleet vs. the 1,800-vehicle re-rating threshold." />
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
   :root {
     color-scheme: dark;
-    --bg: #000000;
-    --panel: #0f0f0f;
-    --panel-2: #171717;
-    --border: #262626;
-    --text: #ffffff;
-    --muted: #a8a8a8;
-    --accent: #e31937;
-    --accent-2: #ff2d45;
-    --pos: #4ade80;
+    --bg: #0b0d10;
+    --panel: #12161b;
+    --border: #1f262e;
+    --text: #e6e9ee;
+    --muted: #8a94a3;
+    --accent: #4ea3ff;
+    --pos: #34d399;
     --neg: #f87171;
-    --zero: #737373;
+    --zero: #9ca3af;
   }
   * { box-sizing: border-box; }
   html, body {
     margin: 0; padding: 0;
     background: var(--bg); color: var(--text);
-    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-    font-size: 15px; line-height: 1.55;
-    font-weight: 400;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    font-size: 15px; line-height: 1.5;
   }
-  a { color: var(--accent); }
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 20px 24px 80px; }
-
-  /* ---------- Tesla-style top bar ---------- */
-  .topbar {
-    display: flex; align-items: center; gap: 20px;
-    padding: 14px 0 22px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 26px;
-  }
-  .brand {
-    display: inline-flex; align-items: center; gap: 12px;
-    text-decoration: none; color: var(--text);
-  }
-  .brand svg { display: block; }
-  .brand .wordmark {
-    font-weight: 700; font-size: 22px;
-    letter-spacing: 0.55em; padding-left: 0.55em;
-    text-transform: uppercase;
-    color: var(--accent);
-    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  }
-  .brand .tag {
-    font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
-    color: var(--muted); font-weight: 500;
-    border-left: 1px solid var(--border); padding-left: 12px; margin-left: 4px;
-  }
-  .topbar .spacer { flex: 1; }
-  .topbar nav { display: flex; gap: 22px; align-items: center; }
-  .topbar nav a {
-    color: var(--text); text-decoration: none;
-    font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
-    transition: color 120ms ease;
-  }
-  .topbar nav a:hover { color: var(--accent); }
-
-  h1 {
-    font-size: 34px; font-weight: 500;
-    margin: 0 0 6px; letter-spacing: -0.015em; line-height: 1.15;
-  }
-  h1 .mark {
-    color: var(--accent); font-weight: 700;
-    letter-spacing: 0.05em;
-  }
-  .sub { color: var(--muted); font-size: 13px; margin-bottom: 22px; }
-  .sub a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--accent); padding-bottom: 1px; }
-  .sub a:hover { color: var(--accent); }
-
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; margin: 20px 0 26px; background: var(--border); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
-  .card { background: var(--panel); padding: 16px 18px; border-radius: 0; }
-  .card .lbl { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 600; }
-  .card .val { font-size: 26px; font-weight: 500; margin-top: 6px; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
-  .card .foot { color: var(--muted); font-size: 11px; margin-top: 4px; }
-
-  #chart, #newschart { background: var(--panel); border: 1px solid var(--border); border-radius: 2px; }
-  #chart { height: 540px; margin-bottom: 6px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 64px; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+  .sub a { color: var(--accent); text-decoration: none; }
+  .sub a:hover { text-decoration: underline; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 18px 0 22px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .card .lbl { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .card .val { font-size: 22px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .card .foot { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  #chart, #newschart { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; }
+  #chart { height: 520px; margin-bottom: 6px; }
   #newschart { height: 180px; }
-
-  .scale-toggle { display: flex; align-items: center; gap: 10px; margin: 8px 0 12px; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; }
+  .scale-toggle { display: flex; align-items: center; gap: 8px; margin: 4px 0 10px; font-size: 12px; color: var(--muted); }
   .scale-toggle button {
-    background: transparent; color: var(--muted); border: 1px solid var(--border);
-    padding: 6px 14px; border-radius: 2px; cursor: pointer;
-    font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
-    font-family: inherit;
-    transition: all 120ms ease;
+    background: var(--panel); color: var(--muted); border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px;
   }
-  .scale-toggle button:hover { color: var(--text); border-color: var(--muted); }
-  .scale-toggle button.on { background: var(--accent); color: #ffffff; border-color: var(--accent); }
-  .scale-toggle .hint { margin-left: auto; font-size: 10px; opacity: 0.7; text-transform: none; letter-spacing: 0; font-weight: 400; }
-
-  .thresholds { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin: 14px 0 6px; }
-  .threshold { background: var(--panel); border: 1px solid var(--border); border-radius: 2px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; }
-  .threshold .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; flex: 0 0 auto; }
+  .scale-toggle button.on { background: var(--accent); color: #0b0d10; border-color: var(--accent); }
+  .scale-toggle .hint { margin-left: auto; font-size: 11px; opacity: 0.7; }
+  .thresholds { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin: 10px 0 6px; }
+  .threshold { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; display: flex; align-items: flex-start; gap: 10px; }
+  .threshold .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex: 0 0 auto; }
   .threshold .body { flex: 1; }
-  .threshold .head { font-size: 12px; font-weight: 600; letter-spacing: 0.02em; }
+  .threshold .head { font-size: 12px; font-weight: 600; }
   .threshold .head a { color: var(--accent); text-decoration: none; }
   .threshold .head a:hover { text-decoration: underline; }
-  .threshold .note { color: var(--muted); font-size: 12px; margin-top: 3px; }
-
-  .news-list { margin-top: 22px; border: 1px solid var(--border); border-radius: 2px; background: var(--panel); }
-  .news-item { display: grid; grid-template-columns: 88px 44px 1fr; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--border); }
+  .threshold .note { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .news-list { margin-top: 18px; }
+  .news-item { display: grid; grid-template-columns: 88px 44px 1fr; gap: 10px; padding: 10px 12px; border-top: 1px solid var(--border); }
   .news-item:first-child { border-top: 0; }
   .news-date { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
-  .news-score { font-weight: 700; font-variant-numeric: tabular-nums; text-align: center; border-radius: 2px; padding: 2px 0; font-size: 12px; }
+  .news-score { font-weight: 600; font-variant-numeric: tabular-nums; text-align: center; border-radius: 4px; padding: 2px 0; }
   .news-body .title { font-weight: 500; }
-  .news-body .title a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--border); }
-  .news-body .title a:hover { border-bottom-color: var(--accent); color: var(--accent); }
-  .news-body .reason { color: var(--muted); font-size: 13px; margin-top: 3px; }
-
-  /* ---------- Tesla-style footer ---------- */
-  .site-footer {
-    margin-top: 56px; padding: 32px 0 8px;
-    border-top: 1px solid var(--border);
-    display: flex; flex-direction: column; align-items: center; gap: 14px;
-  }
-  .site-footer .wordmark {
-    font-weight: 700; font-size: 16px; color: var(--accent);
-    letter-spacing: 0.6em; padding-left: 0.6em;
-    text-transform: uppercase;
-  }
-  .site-footer .disclaimer {
-    color: var(--muted); font-size: 11px; text-align: center; max-width: 640px;
-    letter-spacing: 0.02em;
-  }
-  .site-footer .disclaimer .nom {
-    display: block; margin-top: 6px; font-size: 10px;
-    text-transform: uppercase; letter-spacing: 0.15em;
-  }
+  .news-body .title a { color: var(--text); text-decoration: none; border-bottom: 1px dotted var(--muted); }
+  .news-body .title a:hover { border-bottom-color: var(--text); }
+  .news-body .reason { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .footer { color: var(--muted); font-size: 12px; margin-top: 28px; text-align: center; }
 
   /* Subscribe + community buttons + modal */
-  .header-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 8px; flex-wrap: wrap; }
-  .header-row .heading { flex: 1; min-width: 260px; }
-  .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .header-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+  .header-row h1 { flex: 1; min-width: 200px; }
+  .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .btn-subscribe, .btn-community {
-    border-radius: 2px; padding: 11px 22px; font-weight: 600; font-size: 11px;
-    letter-spacing: 0.18em; text-transform: uppercase;
+    border-radius: 6px; padding: 7px 14px; font-weight: 600; font-size: 13px;
     cursor: pointer; white-space: nowrap; font-family: inherit;
     text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
-    transition: all 120ms ease;
   }
-  .btn-subscribe { background: var(--accent); color: #ffffff; border: 1px solid var(--accent); }
-  .btn-subscribe:hover { background: var(--accent-2); border-color: var(--accent-2); }
+  .btn-subscribe { background: var(--accent); color: #0b0d10; border: 0; }
+  .btn-subscribe:hover { filter: brightness(1.08); }
   .btn-community {
-    background: transparent; color: var(--text);
-    border: 1px solid var(--border);
+    background: transparent; color: var(--accent);
+    border: 1px solid var(--accent);
   }
-  .btn-community:hover { background: var(--text); color: #000000; border-color: var(--text); }
-  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none;
-    align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(8px); }
+  .btn-community:hover { background: var(--accent); color: #0b0d10; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none;
+    align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
   .modal.on { display: flex; }
-  .modal .dialog { background: var(--panel); border: 1px solid var(--border); border-radius: 2px;
-    max-width: 520px; width: 100%; padding: 28px; max-height: 90vh; overflow: auto; }
-  .modal h2 { margin: 0 0 8px; font-size: 20px; font-weight: 500; letter-spacing: -0.01em; }
+  .modal .dialog { background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+    max-width: 520px; width: 100%; padding: 22px; max-height: 90vh; overflow: auto; }
+  .modal h2 { margin: 0 0 6px; font-size: 18px; font-weight: 600; }
   .modal .dialog .close { float: right; background: transparent; border: 0; color: var(--muted);
-    font-size: 24px; cursor: pointer; padding: 0; line-height: 1; }
-  .modal .dialog .close:hover { color: var(--accent); }
-  .modal p { color: var(--muted); font-size: 13px; margin: 6px 0 14px; }
-  .modal .preview { background: #000000; border: 1px solid var(--border); border-radius: 2px;
-    padding: 16px; margin: 14px 0 18px; font-size: 12px; }
+    font-size: 22px; cursor: pointer; padding: 0; line-height: 1; }
+  .modal .dialog .close:hover { color: var(--text); }
+  .modal p { color: var(--muted); font-size: 13px; margin: 4px 0 12px; }
+  .modal .preview { background: #0b0d10; border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px; margin: 12px 0 16px; font-size: 12px; }
   .modal .preview .email-from { color: var(--muted); font-size: 11px; margin-bottom: 8px; }
   .modal .preview .email-subj { color: var(--text); font-weight: 600; margin-bottom: 8px; font-size: 13px; }
   .modal .preview table { border-collapse: collapse; font-size: 12px; margin-top: 6px; }
   .modal .preview td { padding: 2px 10px 2px 0; }
   .modal .preview td.k { color: var(--muted); }
-  .modal .preview .hero { font-size: 22px; font-weight: 500; margin-bottom: 4px; letter-spacing: -0.01em; }
+  .modal .preview .hero { font-size: 20px; font-weight: 600; margin-bottom: 2px; }
   .modal .preview .hero small { font-size: 12px; font-weight: 400; color: var(--muted); }
   .modal form .row { display: flex; gap: 8px; align-items: stretch; }
-  .modal input[type=email] { flex: 1; background: #000000; border: 1px solid var(--border);
-    border-radius: 2px; color: var(--text); padding: 11px 12px; font-family: inherit; font-size: 14px; }
+  .modal input[type=email] { flex: 1; background: #0b0d10; border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); padding: 8px 10px; font-family: inherit; font-size: 14px; }
   .modal input[type=email]:focus { outline: none; border-color: var(--accent); }
-  .modal .msg { margin-top: 12px; font-size: 12px; min-height: 16px; }
+  .modal .msg { margin-top: 10px; font-size: 12px; min-height: 16px; }
   .modal .msg.ok { color: var(--pos); }
   .modal .msg.err { color: var(--neg); }
-
-  @media (max-width: 640px) {
-    h1 { font-size: 26px; }
-    .topbar { gap: 10px; }
-    .topbar nav { gap: 14px; }
-    .topbar nav a { font-size: 10px; }
-    .brand .wordmark { font-size: 18px; }
-    .brand .tag { display: none; }
-  }
 </style>
 </head>
 <body>
 <div class="wrap">
-
-  <div class="topbar">
-    <a class="brand" href="./" aria-label="Tesla Robotaxi Predictor">
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-        <path d="M2 4 L26 4 M14 4 L14 24" stroke="#e31937" stroke-width="3.5" stroke-linecap="square"/>
-        <path d="M5 8 Q14 2 23 8" stroke="#e31937" stroke-width="1.5" fill="none"/>
-      </svg>
-      <span class="wordmark">TESLA</span>
-      <span class="tag">Robotaxi Predictor</span>
-    </a>
-    <div class="spacer"></div>
-    <nav>
-      <a href="snapshots.html">Snapshots</a>
-      <a href="community.html">Community</a>
-    </nav>
-  </div>
-
   <div class="header-row">
-    <div class="heading">
-      <h1>Robotaxi <span class="mark">Scaling</span> Predictor</h1>
-      <div class="sub">
-        Unsupervised fleet vs. 1,800 re-rating threshold. Data from
-        <a href="https://robotaxitracker.com/?provider=tesla" target="_blank" rel="noopener">robotaxitracker.com</a>.
-        Updated weekly · Last run: <span id="generated">—</span>
-        · <a href="snapshots.html">Past snapshots</a>
-      </div>
-    </div>
+    <h1>Tesla Robotaxi Scaling Predictor</h1>
     <div class="header-actions">
-      <a class="btn-community" href="community.html">Community</a>
-      <button class="btn-subscribe" id="openSubscribe">Subscribe</button>
+      <a class="btn-community" href="community.html">💬 Community</a>
+      <button class="btn-subscribe" id="openSubscribe">📬 Subscribe</button>
     </div>
+  </div>
+  <div class="sub">
+    Unsupervised fleet vs. 1,800 re-rating threshold. Data from
+    <a href="https://robotaxitracker.com/?provider=tesla" target="_blank" rel="noopener">robotaxitracker.com</a>.
+    Updated weekly · Last run: <span id="generated">—</span>
+    · <a href="snapshots.html">📅 Past snapshots</a>
   </div>
 
   <div class="grid" id="stats"></div>
   <div class="scale-toggle">
-    <span>Y-axis scale</span>
+    <span>Y-axis scale:</span>
     <button id="scale-log" class="on">Log</button>
     <button id="scale-linear">Linear</button>
   </div>
@@ -272,19 +160,15 @@ TEMPLATE = """<!doctype html>
 
   <div class="news-list" id="newslist"></div>
 
-  <footer class="site-footer">
-    <span class="wordmark">TESLA</span>
-    <div class="disclaimer">
-      Forecast is a prior-informed Monte Carlo exponential. The cloud narrows as weekly datapoints accumulate. Not investment advice.
-      <span class="nom">Independent tracker · Not affiliated with Tesla, Inc.</span>
-    </div>
-  </footer>
+  <div class="footer">
+    Forecast is a prior-informed Monte Carlo exponential. The cloud narrows as weekly datapoints accumulate. Not investment advice.
+  </div>
 </div>
 
 <div class="modal" id="subscribeModal">
   <div class="dialog">
     <button type="button" class="close" aria-label="Close" id="closeSubscribe">×</button>
-    <h2>Weekly robotaxi update</h2>
+    <h2>📬 Weekly robotaxi update</h2>
     <p>Every <b>Monday at 08:00 CT / 13:00 UTC</b>, right after this dashboard refreshes, I'll email you a summary. One email a week. One-click unsubscribe in every email.</p>
 
     <div class="preview" id="emailPreview">
@@ -355,7 +239,7 @@ TEMPLATE = """<!doctype html>
     x: fx.concat(fx.slice().reverse()),
     y: data.p95.concat(data.p5.slice().reverse()),
     fill: 'toself',
-    fillcolor: 'rgba(227, 25, 55, 0.08)',
+    fillcolor: 'rgba(78, 163, 255, 0.10)',
     line: { width: 0 },
     name: 'P5–P95',
     hoverinfo: 'skip',
@@ -365,7 +249,7 @@ TEMPLATE = """<!doctype html>
     x: fx.concat(fx.slice().reverse()),
     y: data.p75.concat(data.p25.slice().reverse()),
     fill: 'toself',
-    fillcolor: 'rgba(227, 25, 55, 0.22)',
+    fillcolor: 'rgba(78, 163, 255, 0.22)',
     line: { width: 0 },
     name: 'P25–P75',
     hoverinfo: 'skip',
@@ -373,21 +257,21 @@ TEMPLATE = """<!doctype html>
   };
   const median = {
     x: fx, y: data.p50, mode: 'lines',
-    line: { color: '#e31937', width: 2, dash: 'dash' },
+    line: { color: '#4ea3ff', width: 2, dash: 'dash' },
     name: 'Median forecast',
     type: 'scatter',
   };
   const sampleTraces = (data.samples || []).slice(0, isMobile ? 30 : 80).map((s, i) => ({
     x: fx, y: s, mode: 'lines',
-    line: { color: 'rgba(227, 25, 55, 0.06)', width: 1 },
+    line: { color: 'rgba(78, 163, 255, 0.06)', width: 1 },
     hoverinfo: 'skip',
     showlegend: false,
     type: 'scatter',
   }));
   const actual = {
     x: histX, y: histY, mode: 'lines+markers',
-    line: { color: '#ffffff', width: 2.5 },
-    marker: { color: '#ffffff', size: 7 },
+    line: { color: '#e6e9ee', width: 2.5 },
+    marker: { color: '#e6e9ee', size: 7 },
     name: 'Actual',
     type: 'scatter',
   };
@@ -415,12 +299,15 @@ TEMPLATE = """<!doctype html>
     text: Math.round(t.value).toLocaleString() + ' — ' + (t.label || ''),
     showarrow: false,
     font: { size: 11, color: t.color || '#facc15' },
-    bgcolor: 'rgba(15, 15, 15, 0.88)',
+    bgcolor: 'rgba(18, 22, 27, 0.85)',
     bordercolor: t.color || '#facc15',
     borderwidth: 1,
     borderpad: 4,
   }));
 
+  // ETA brackets: for each target, show a P25–P75 horizontal bracket at the
+  // threshold y-value and a date-range label above it. Helps the viewer
+  // read the likely crossing window directly off the chart.
   const etaShapes = [];
   const etaAnnotations = [];
   const monthShort = d => {
@@ -438,6 +325,7 @@ TEMPLATE = """<!doctype html>
     const e = etaBy[key];
     if (!e || !e.p25 || !e.p75) return;
     const color = t.color || '#facc15';
+    // Vertical lines at P25 and P75 from baseline up to threshold.
     etaShapes.push({
       type: 'line', xref: 'x', yref: 'y',
       x0: e.p25, x1: e.p25, y0: 1, y1: t.value,
@@ -450,11 +338,13 @@ TEMPLATE = """<!doctype html>
       line: { color, width: 1, dash: 'dot' },
       opacity: 0.7,
     });
+    // Horizontal bracket bar at threshold height.
     etaShapes.push({
       type: 'line', xref: 'x', yref: 'y',
       x0: e.p25, x1: e.p75, y0: t.value, y1: t.value,
       line: { color, width: 3 },
     });
+    // Date-range label above the midpoint.
     const labelText = (e.p25.slice(0, 7) === e.p75.slice(0, 7))
       ? monthYear(e.p25)
       : `${monthShort(e.p25)} – ${monthShort(e.p75)}`;
@@ -467,37 +357,31 @@ TEMPLATE = """<!doctype html>
       text: labelText,
       showarrow: false,
       font: { size: 10, color },
-      bgcolor: 'rgba(0, 0, 0, 0.9)',
+      bgcolor: 'rgba(11, 13, 16, 0.9)',
       borderpad: 3,
     });
   });
-  // Cap the log y-axis so extreme Monte Carlo tails don't squish the threshold
-  // lines and ETA brackets into an unreadable strip near the bottom. Top is
-  // 5x the highest threshold; bottom is 1 so small historical values still show.
-  const topThreshold = Math.max(...targets.map(t => t.value));
-  const logYMax = Math.log10(topThreshold * 5);
-
   const chartLayoutBase = {
     annotations: thresholdAnnotations.concat(etaAnnotations),
     shapes: etaShapes,
-    paper_bgcolor: '#0f0f0f',
-    plot_bgcolor: '#0f0f0f',
-    font: { color: '#ffffff', family: 'Inter, "Helvetica Neue", Helvetica, Arial, sans-serif' },
+    paper_bgcolor: '#12161b',
+    plot_bgcolor: '#12161b',
+    font: { color: '#e6e9ee', family: 'Inter, system-ui, sans-serif' },
     margin: { t: 24, r: 20, b: 40, l: 70 },
-    xaxis: { gridcolor: '#262626', zerolinecolor: '#262626', title: '' },
+    xaxis: { gridcolor: '#1f262e', zerolinecolor: '#1f262e', title: '' },
     yaxis: {
-      gridcolor: '#262626', zerolinecolor: '#262626',
+      gridcolor: '#1f262e', zerolinecolor: '#1f262e',
       title: 'Unsupervised robotaxis',
       type: 'log',
-      range: [0, logYMax],
-      autorange: false,
     },
     legend: { orientation: 'h', y: -0.14, font: { size: 11 } },
     hovermode: 'x unified',
   };
   Plotly.newPlot('chart', chartTraces, chartLayoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
 
-  const thresholdStartIdx = 2 + sampleTraces.length + 1;
+  // Compute indices of threshold traces inside chartTraces so we can toggle them
+  // together with their right-edge annotations when the y-axis scale changes.
+  const thresholdStartIdx = 2 + sampleTraces.length + 1; // bandOuter, bandInner, samples, median
   const thresholdIndices = thresholdTraces.map((_, i) => thresholdStartIdx + i);
 
   const btnLinear = document.getElementById('scale-linear');
@@ -505,6 +389,9 @@ TEMPLATE = """<!doctype html>
   function setScale(mode) {
     btnLinear.classList.toggle('on', mode === 'linear');
     btnLog.classList.toggle('on', mode === 'log');
+    // On linear scale the y-axis stretches to the Monte-Carlo upper tail, which
+    // flattens the 1,000/1,800 threshold lines onto the x-axis and makes them
+    // useless — hide them (and their labels) when linear is active.
     const showThresholds = mode === 'log';
     if (thresholdIndices.length) {
       Plotly.restyle('chart', { visible: showThresholds ? true : 'legendonly' }, thresholdIndices);
@@ -512,8 +399,7 @@ TEMPLATE = """<!doctype html>
     Plotly.relayout('chart', {
       'yaxis.type': mode,
       'yaxis.rangemode': mode === 'linear' ? 'tozero' : 'normal',
-      'yaxis.autorange': mode === 'linear',
-      'yaxis.range': mode === 'log' ? [0, logYMax] : undefined,
+      'yaxis.autorange': true,
       annotations: showThresholds ? thresholdAnnotations.concat(etaAnnotations) : [],
       shapes: showThresholds ? etaShapes : [],
     });
@@ -541,7 +427,7 @@ TEMPLATE = """<!doctype html>
 
   // ---------- news timeline (below main chart) ----------
   const news = (data.news || []).slice().sort((a, b) => a.date.localeCompare(b.date));
-  const colorFor = s => s > 0 ? '#4ade80' : s < 0 ? '#e31937' : '#737373';
+  const colorFor = s => s > 0 ? '#34d399' : s < 0 ? '#f87171' : '#9ca3af';
   const truncate = (s, n) => (s || '').length > n ? (s || '').slice(0, n - 1) + '…' : (s || '');
   const newsTrace = {
     x: news.map(n => n.date),
@@ -550,14 +436,16 @@ TEMPLATE = """<!doctype html>
     marker: {
       color: news.map(n => colorFor(n.impact_score)),
       size: news.map(n => 10 + Math.abs(n.impact_score) * 4),
-      line: { color: '#000000', width: 1 },
+      line: { color: '#0b0d10', width: 1 },
     },
+    // Compact, site-themed hover: title only (reason is visible in the list below),
+    // with a thin accent border in the impact color.
     customdata: news.map(n => [truncate(n.title, 70), n.date]),
     hovertemplate: '<b>%{customdata[0]}</b><br>%{customdata[1]} · impact %{y:+d}<extra></extra>',
     hoverlabel: {
-      bgcolor: '#0f0f0f',
+      bgcolor: '#12161b',
       bordercolor: news.map(n => colorFor(n.impact_score)),
-      font: { color: '#ffffff', family: 'Inter, "Helvetica Neue", Helvetica, Arial, sans-serif', size: 12 },
+      font: { color: '#e6e9ee', family: 'Inter, -apple-system, system-ui, sans-serif', size: 12 },
       align: 'left',
       namelength: -1,
     },
@@ -567,26 +455,26 @@ TEMPLATE = """<!doctype html>
   const zeroLine = {
     x: news.length ? [news[0].date, news[news.length - 1].date] : [],
     y: [0, 0], mode: 'lines',
-    line: { color: '#262626', width: 1 },
+    line: { color: '#1f262e', width: 1 },
     hoverinfo: 'skip', showlegend: false,
     type: 'scatter',
   };
   Plotly.newPlot('newschart', [zeroLine, newsTrace], {
-    paper_bgcolor: '#0f0f0f',
-    plot_bgcolor: '#0f0f0f',
-    font: { color: '#ffffff', family: 'Inter, "Helvetica Neue", Helvetica, Arial, sans-serif' },
+    paper_bgcolor: '#12161b',
+    plot_bgcolor: '#12161b',
+    font: { color: '#e6e9ee' },
     margin: { t: 18, r: 20, b: 40, l: 60 },
     xaxis: {
-      gridcolor: '#262626',
+      gridcolor: '#1f262e',
       range: [allX[0], allX[allX.length - 1]],
       title: '',
     },
     yaxis: {
-      gridcolor: '#262626',
+      gridcolor: '#1f262e',
       title: 'News impact',
       range: [-3.5, 3.5],
       tickvals: [-3, -2, -1, 0, 1, 2, 3],
-      zerolinecolor: '#262626',
+      zerolinecolor: '#1f262e',
     },
     showlegend: false,
     hovermode: 'closest',
@@ -605,7 +493,7 @@ TEMPLATE = """<!doctype html>
         <div class="reason">${escapeHtml(n.impact_reason)}</div>
       </div>
     </div>`;
-  }).join('') || '<div class="news-item" style="grid-template-columns:1fr;color:var(--muted);text-align:center">No news items yet. They appear after the first successful Perplexity run.</div>';
+  }).join('') || '<div class="footer">No news items yet. They appear after the first successful Perplexity run.</div>';
 
   function escapeHtml(s) {
     return String(s || '').replace(/[&<>"']/g, c => ({
@@ -626,6 +514,7 @@ TEMPLATE = """<!doctype html>
   const submitBtn = document.getElementById('subscribeBtn');
   const msg = document.getElementById('subscribeMsg');
 
+  // Populate the email preview with live values from the current forecast.
   document.getElementById('previewSubject').textContent =
     `Robotaxi update: ${latest ?? '—'} unsupervised — ${(data.generated_at || '').slice(0, 10)}`;
   document.getElementById('previewHero').innerHTML =
@@ -681,6 +570,7 @@ def main() -> int:
         return 1
     forecast = json.loads(FORECAST_JSON.read_text(encoding="utf-8"))
     OUT_HTML.parent.mkdir(parents=True, exist_ok=True)
+    # Embed as JSON (escape `</script>` defensively).
     payload = json.dumps(forecast).replace("</", "<\\/")
     html = TEMPLATE.replace("__FORECAST_JSON__", payload)
     OUT_HTML.write_text(html, encoding="utf-8")
