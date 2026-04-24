@@ -27,7 +27,7 @@ HISTORY_CSV = ROOT / "data" / "history.csv"
 FORECAST_JSON = ROOT / "data" / "forecast.json"
 NEWS_JSON = ROOT / "data" / "news.json"
 
-DASHBOARD_URL = "https://yusufhgmail.github.io/tslaRobotaxiPredictor/"
+DASHBOARD_URL = "https://robotaxipredictor.com/"
 REPO_URL = "https://github.com/yusufhgmail/tslaRobotaxiPredictor"
 
 RESEND_URL = "https://api.resend.com/emails"
