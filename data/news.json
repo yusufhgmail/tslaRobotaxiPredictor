@@ -9,12 +9,12 @@
     "captured_at": "2026-04-23T11:29:02+00:00"
   },
   {
-    "date": "2026-04-24",
-    "title": "Morgan Stanley Projects 1,000 Tesla Robotaxi Vehicles by End of 2026",
+    "date": "2026-04-23",
+    "title": "Cybercab Volume Production Planned for Late 2026 at Giga Texas",
     "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
-    "summary": "Morgan Stanley analyst forecasts Tesla will operate 1,000 robotaxi vehicles by end of 2026 and one million by 2035, framing unsupervised miles as a feedback loop accelerating FSD model improvement.",
-    "impact_score": 0,
-    "impact_reason": "Third-party projection lacks new operational facts or regulatory catalysts; analyst forecasts typically carry high uncertainty and do not directly move fleet scaling trajectory absent underlying business announcements.",
+    "summary": "Tesla plans to begin volume production of the Cybercab\u2014a purpose-built, two-seat autonomous vehicle with no steering wheel or pedals\u2014later this year at Giga Texas. This dedicated hardware is intended to power scaled robotaxi deployment.",
+    "impact_score": 1,
+    "impact_reason": "Mildly positive: hardware production timeline removes a key gating constraint for fleet scaling post-H1 2026, though late-year start limits impact on near-term expansion velocity.",
     "captured_at": "2026-04-23T11:29:02+00:00"
   },
   {
