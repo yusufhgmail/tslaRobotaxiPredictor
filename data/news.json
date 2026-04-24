@@ -9,13 +9,13 @@
     "captured_at": "2026-04-23T11:29:02+00:00"
   },
   {
-    "date": "2026-04-23",
-    "title": "Cybercab Volume Production Planned for Late 2026 at Giga Texas",
-    "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
-    "summary": "Tesla plans to begin volume production of the Cybercab\u2014a purpose-built, two-seat autonomous vehicle with no steering wheel or pedals\u2014later this year at Giga Texas. This dedicated hardware is intended to power scaled robotaxi deployment.",
+    "date": "2026-04-24",
+    "title": "FSD v14.3+ Ready for Unsupervised Robotaxi Operations",
+    "url": "https://www.youtube.com/watch?v=Wyfczi_d_BM",
+    "summary": "Industry analysts indicate Tesla has FSD versions 14.3.2.1 or 14.4 ready for unsupervised robotaxi deployment, removing a key technical gate blocking nationwide scaling without dependency on newer hardware. Cybercab production planned for later in 2026 provides future fleet supply.",
     "impact_score": 1,
-    "impact_reason": "Mildly positive: hardware production timeline removes a key gating constraint for fleet scaling post-H1 2026, though late-year start limits impact on near-term expansion velocity.",
-    "captured_at": "2026-04-23T11:29:02+00:00"
+    "impact_reason": "Mildly positive: removes a major technical barrier (software readiness) to scaling, though hardware (Cybercab) production and regulatory constraints remain unresolved bottlenecks.",
+    "captured_at": "2026-04-24T15:39:56+00:00"
   },
   {
     "date": "2026-04-23",
@@ -34,6 +34,24 @@
     "impact_score": 1,
     "impact_reason": "Official confirmation of groundwork for new metro expansions supports future scaling velocity by advancing regulatory and testing prerequisites, though lacks specific timelines or fleet sizes.",
     "captured_at": "2026-04-24T14:57:05+00:00"
+  },
+  {
+    "date": "2026-04-23",
+    "title": "Global Robotaxi Market Projected at $168B by 2035 with 3.6M Vehicles",
+    "url": "https://www.benzinga.com/markets/tech/26/04/51797410/robotaxi-market-set-to-explode-to-168-billion-analysts-say",
+    "summary": "Counterpoint Research projects the global robotaxi market will reach $168 billion by 2035 with 3.6 million vehicles deployed, with the US led by Waymo and Tesla while China accelerates deployment. This establishes the competitive and market-structure context for Tesla's scaling strategy.",
+    "impact_score": 0,
+    "impact_reason": "Neutral: macro market analysis without Tesla-specific operational milestones; provides context but does not directly advance or constrain Tesla's fleet deployment velocity.",
+    "captured_at": "2026-04-24T15:39:56+00:00"
+  },
+  {
+    "date": "2026-04-22",
+    "title": "Tesla Unsupervised Robotaxi Fleet Availability Crisis in Dallas and Houston",
+    "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
+    "summary": "Three days post-launch, Dallas and Houston robotaxi fleets showed 0-2% availability with only brief operational windows, indicating severe operational bottlenecks despite fleet deployment. By contrast, Austin maintains 13 active unsupervised vehicles and Bay Area has 500+ vehicles with safety drivers.",
+    "impact_score": -1,
+    "impact_reason": "Mildly negative: availability crisis and operational instability in new markets directly impede fleet utilization and scaling velocity, though root cause (technical vs. regulatory) remains unclear.",
+    "captured_at": "2026-04-23T11:29:02+00:00"
   },
   {
     "date": "2026-04-22",
