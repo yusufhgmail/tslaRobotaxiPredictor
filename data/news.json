@@ -46,15 +46,6 @@
   },
   {
     "date": "2026-04-22",
-    "title": "Tesla Unsupervised Robotaxi Fleet Availability Crisis in Dallas and Houston",
-    "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
-    "summary": "Three days post-launch, Dallas and Houston robotaxi fleets showed 0-2% availability with only brief operational windows, indicating severe operational bottlenecks despite fleet deployment. By contrast, Austin maintains 13 active unsupervised vehicles and Bay Area has 500+ vehicles with safety drivers.",
-    "impact_score": -1,
-    "impact_reason": "Mildly negative: availability crisis and operational instability in new markets directly impede fleet utilization and scaling velocity, though root cause (technical vs. regulatory) remains unclear.",
-    "captured_at": "2026-04-23T11:29:02+00:00"
-  },
-  {
-    "date": "2026-04-22",
     "title": "Tesla Plans to Double Austin Robotaxi Fleet to ~60 by December",
     "url": "https://www.notateslaapp.com/news/3367/tesla-to-double-austin-robotaxi-fleet-but-will-it-meet-its-2025-target",
     "summary": "Elon Musk announced plans to double the Austin Robotaxi fleet from 29-30 current vehicles to about 60 next month, far short of the prior 500-vehicle end-2025 target. All current Austin rides remain supervised with safety drivers.",
@@ -70,6 +61,15 @@
     "impact_score": 2,
     "impact_reason": "Doubling the Austin geofence to over 170 square miles in rapid succession significantly increases the operational area for unsupervised rides, enabling more rides and data collection to accelerate fleet scaling.",
     "captured_at": "2026-04-24T12:50:58+00:00"
+  },
+  {
+    "date": "2026-04-20",
+    "title": "Tesla Dallas-Houston Robotaxi Fleet Doubles to Four Vehicles",
+    "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
+    "summary": "Crowdsourced Robotaxi Tracker data shows Tesla increased its unsupervised fleet from one to two vehicles in both Dallas and Houston within days of launch. Availability remained low at 0-2% over the first 24 hours with brief spikes.",
+    "impact_score": 1,
+    "impact_reason": "Doubling fleet size in new cities shortly after launch indicates early scaling progress, though low availability tempers the velocity impact.",
+    "captured_at": "2026-04-23T11:29:02+00:00"
   },
   {
     "date": "2026-04-18",
