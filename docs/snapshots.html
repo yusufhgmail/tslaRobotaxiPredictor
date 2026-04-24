@@ -5,61 +5,118 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Past snapshots — Tesla Robotaxi Scaling Predictor</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <style>
   :root {
     color-scheme: dark;
-    --bg: #0b0d10;
-    --panel: #12161b;
-    --border: #1f262e;
-    --text: #e6e9ee;
-    --muted: #8a94a3;
-    --accent: #4ea3ff;
+    --bg: #000000;
+    --panel: #0f0f0f;
+    --border: #262626;
+    --text: #ffffff;
+    --muted: #a8a8a8;
+    --accent: #e31937;
+    --accent-2: #ff2d45;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
-    font-family: -apple-system, Segoe UI, Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 15px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
   a { color: var(--accent); }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 64px; }
-  header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-  header h1 { font-size: 20px; font-weight: 600; margin: 0; }
-  header .sub { color: var(--muted); font-size: 13px; }
-  header nav { margin-left: auto; font-size: 13px; }
-  header nav a { color: var(--muted); text-decoration: none; margin-left: 14px; }
-  header nav a:hover { color: var(--text); }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 20px 24px 80px; }
 
-  .layout { display: grid; grid-template-columns: 240px 1fr; gap: 18px; }
+  /* Tesla topbar */
+  .topbar {
+    display: flex; align-items: center; gap: 20px;
+    padding: 14px 0 22px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 26px;
+  }
+  .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+  .brand .wordmark {
+    font-weight: 700; font-size: 22px;
+    letter-spacing: 0.55em; padding-left: 0.55em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  .brand .tag {
+    font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--muted); font-weight: 500;
+    border-left: 1px solid var(--border); padding-left: 12px; margin-left: 4px;
+  }
+  .topbar .spacer { flex: 1; }
+  .topbar nav { display: flex; gap: 22px; align-items: center; }
+  .topbar nav a {
+    color: var(--text); text-decoration: none;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .topbar nav a:hover { color: var(--accent); }
+
+  header.pagehead { margin-bottom: 22px; }
+  header.pagehead h1 { font-size: 30px; font-weight: 500; margin: 0 0 6px; letter-spacing: -0.015em; }
+  header.pagehead h1 .mark { color: var(--accent); font-weight: 700; }
+  header.pagehead .sub { color: var(--muted); font-size: 13px; }
+
+  .layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
   @media (max-width: 720px) { .layout { grid-template-columns: 1fr; } }
 
-  .list { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-height: 640px; overflow: auto; }
+  .list { background: var(--panel); border: 1px solid var(--border); border-radius: 2px; padding: 8px; max-height: 640px; overflow: auto; }
   .list button { display: block; width: 100%; text-align: left; background: transparent; color: var(--text);
-    border: 0; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; font-family: inherit; }
-  .list button:hover { background: rgba(255,255,255,0.04); }
-  .list button.on { background: var(--accent); color: #0b0d10; font-weight: 600; }
-  .list .date { font-variant-numeric: tabular-nums; }
+    border: 0; padding: 10px 12px; border-radius: 2px; cursor: pointer; font-size: 13px; font-family: inherit;
+    transition: background 120ms ease; }
+  .list button:hover { background: rgba(255,255,255,0.05); }
+  .list button.on { background: var(--accent); color: #ffffff; font-weight: 600; }
+  .list .date { font-variant-numeric: tabular-nums; font-weight: 500; }
   .list .sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
-  .list button.on .sub { color: #0b0d10; }
+  .list button.on .sub { color: #ffffff; opacity: 0.85; }
 
-  #chart { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; height: 560px; }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }
-  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
-  .card .lbl { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
-  .card .val { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 4px; }
+  #chart { background: var(--panel); border: 1px solid var(--border); border-radius: 2px; height: 560px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; margin-top: 12px; background: var(--border); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
+  .card { background: var(--panel); padding: 12px 14px; border-radius: 0; }
+  .card .lbl { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 600; }
+  .card .val { font-size: 20px; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 4px; letter-spacing: -0.01em; }
   .muted { color: var(--muted); font-size: 12px; }
   .empty { color: var(--muted); text-align: center; padding: 60px 0; }
+
+  .site-footer {
+    margin-top: 56px; padding: 32px 0 8px;
+    border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+  .site-footer .wordmark {
+    font-weight: 700; font-size: 16px; color: var(--accent);
+    letter-spacing: 0.6em; padding-left: 0.6em;
+    text-transform: uppercase;
+  }
+  .site-footer .nom {
+    color: var(--muted); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  @media (max-width: 640px) {
+    .brand .tag { display: none; }
+    header.pagehead h1 { font-size: 24px; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div>
-      <h1>Past snapshots</h1>
-      <div class="sub">Pick a date from the list to see the forecast as it was then.</div>
-    </div>
+
+  <div class="topbar">
+    <a class="brand" href="./" aria-label="Tesla Robotaxi Predictor (independent tracker)">
+      <span class="wordmark">TESLA</span>
+      <span class="tag">Robotaxi Predictor</span>
+    </a>
+    <div class="spacer"></div>
     <nav>
-      <a href="./">← Dashboard</a>
+      <a href="./">Dashboard</a>
       <a href="community.html">Community</a>
     </nav>
+  </div>
+
+  <header class="pagehead">
+    <h1>Past <span class="mark">Snapshots</span></h1>
+    <div class="sub">Pick a date from the list to see the forecast as it was then.</div>
   </header>
 
   <div class="layout">
@@ -70,6 +127,11 @@
       <div class="muted" id="caption" style="margin-top:8px"></div>
     </div>
   </div>
+
+  <footer class="site-footer">
+    <span class="wordmark">TESLA</span>
+    <span class="nom">Independent tracker · Not affiliated with Tesla, Inc.</span>
+  </footer>
 </div>
 
 <script>
@@ -110,31 +172,31 @@ function render(snapshot) {
   const bandOuter = {
     x: fx.concat(fx.slice().reverse()),
     y: (snapshot.p95 || []).concat((snapshot.p5 || []).slice().reverse()),
-    fill: 'toself', fillcolor: 'rgba(78, 163, 255, 0.10)', line: { width: 0 },
+    fill: 'toself', fillcolor: 'rgba(227, 25, 55, 0.08)', line: { width: 0 },
     name: 'P5–P95', hoverinfo: 'skip', type: 'scatter',
   };
   const bandInner = {
     x: fx.concat(fx.slice().reverse()),
     y: (snapshot.p75 || []).concat((snapshot.p25 || []).slice().reverse()),
-    fill: 'toself', fillcolor: 'rgba(78, 163, 255, 0.22)', line: { width: 0 },
+    fill: 'toself', fillcolor: 'rgba(227, 25, 55, 0.22)', line: { width: 0 },
     name: 'P25–P75', hoverinfo: 'skip', type: 'scatter',
   };
   const median = {
     x: fx, y: snapshot.p50 || [], mode: 'lines',
-    line: { color: '#4ea3ff', width: 2, dash: 'dash' }, name: 'Median', type: 'scatter',
+    line: { color: '#e31937', width: 2, dash: 'dash' }, name: 'Median', type: 'scatter',
   };
   const actual = {
     x: histX, y: histY, mode: 'lines+markers',
-    line: { color: '#e6e9ee', width: 2.5 }, marker: { color: '#e6e9ee', size: 6 },
+    line: { color: '#ffffff', width: 2.5 }, marker: { color: '#ffffff', size: 6 },
     name: 'Actual', type: 'scatter',
   };
 
   Plotly.newPlot('chart', [bandOuter, bandInner, median, ...thresholdTraces, actual], {
-    paper_bgcolor: '#12161b', plot_bgcolor: '#12161b',
-    font: { color: '#e6e9ee' },
+    paper_bgcolor: '#0f0f0f', plot_bgcolor: '#0f0f0f',
+    font: { color: '#ffffff', family: 'Inter, "Helvetica Neue", Helvetica, Arial, sans-serif' },
     margin: { t: 24, r: 20, b: 40, l: 70 },
-    xaxis: { gridcolor: '#1f262e' },
-    yaxis: { gridcolor: '#1f262e', title: 'Unsupervised robotaxis', type: 'log' },
+    xaxis: { gridcolor: '#262626' },
+    yaxis: { gridcolor: '#262626', title: 'Unsupervised robotaxis', type: 'log' },
     legend: { orientation: 'h', y: -0.14, font: { size: 11 } },
     hovermode: 'x unified',
   }, { displaylogo: false, responsive: true });

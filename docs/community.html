@@ -6,52 +6,92 @@
 <title>Community — Tesla Robotaxi Scaling Predictor</title>
 <meta name="description" content="Feature requests, discussion, and newsletter signup for the Tesla robotaxi scaling predictor." />
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
   :root {
     color-scheme: dark;
-    --bg: #0b0d10;
-    --panel: #12161b;
-    --border: #1f262e;
-    --text: #e6e9ee;
-    --muted: #8a94a3;
-    --accent: #4ea3ff;
-    --pos: #34d399;
-    --neg: #f87171;
+    --bg: #000000;
+    --panel: #0f0f0f;
+    --panel-2: #171717;
+    --border: #262626;
+    --text: #ffffff;
+    --muted: #a8a8a8;
+    --accent: #e31937;
+    --accent-2: #ff2d45;
+    --pos: #4ade80;
+    --neg: #e31937;
   }
   * { box-sizing: border-box; }
   html, body {
     margin: 0; padding: 0;
     background: var(--bg); color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
-    font-size: 15px; line-height: 1.5;
+    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 15px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   a { color: var(--accent); }
-  .wrap { max-width: 860px; margin: 0 auto; padding: 24px 20px 80px; }
-  header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-  header h1 { font-size: 20px; font-weight: 600; margin: 0; }
-  header .sub { color: var(--muted); font-size: 13px; }
-  header nav { margin-left: auto; display: flex; gap: 14px; align-items: center; font-size: 13px; }
-  header nav a { color: var(--muted); text-decoration: none; }
-  header nav a:hover { color: var(--text); }
-  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 20px 24px 80px; }
+
+  /* Tesla top bar */
+  .topbar {
+    display: flex; align-items: center; gap: 20px;
+    padding: 14px 0 22px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 26px;
+  }
+  .brand {
+    display: inline-flex; align-items: center; gap: 10px;
+    text-decoration: none; color: var(--text);
+  }
+  .brand .wordmark {
+    font-weight: 700; font-size: 22px;
+    letter-spacing: 0.55em; padding-left: 0.55em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .brand .tag {
+    font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--muted); font-weight: 500;
+    border-left: 1px solid var(--border); padding-left: 12px; margin-left: 4px;
+  }
+  .topbar .spacer { flex: 1; }
+  .topbar nav { display: flex; gap: 22px; align-items: center; }
+  .topbar nav a {
+    color: var(--text); text-decoration: none;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .topbar nav a:hover { color: var(--accent); }
+
+  header.pagehead { margin-bottom: 22px; }
+  header.pagehead h1 { font-size: 30px; font-weight: 500; margin: 0 0 6px; letter-spacing: -0.015em; }
+  header.pagehead h1 .mark { color: var(--accent); font-weight: 700; }
+  header.pagehead .sub { color: var(--muted); font-size: 13px; }
+
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 2px; padding: 18px; margin-bottom: 14px; }
   input[type=text], input[type=email], input[type=url], textarea {
-    width: 100%; background: #0b0d10; border: 1px solid var(--border); border-radius: 6px;
-    color: var(--text); font-family: inherit; font-size: 14px; padding: 8px 10px;
+    width: 100%; background: #000000; border: 1px solid var(--border); border-radius: 2px;
+    color: var(--text); font-family: inherit; font-size: 14px; padding: 10px 12px;
+    transition: border-color 120ms ease;
   }
   input[type=text]:focus, input[type=email]:focus, input[type=url]:focus, textarea:focus {
     outline: none; border-color: var(--accent);
   }
-  textarea { min-height: 80px; resize: vertical; }
+  textarea { min-height: 88px; resize: vertical; }
   button {
-    background: var(--accent); color: #0b0d10; border: 0; border-radius: 6px;
-    padding: 8px 14px; font-weight: 600; font-size: 13px; cursor: pointer;
+    background: var(--accent); color: #ffffff; border: 1px solid var(--accent); border-radius: 2px;
+    padding: 10px 20px; font-weight: 600; font-size: 11px; cursor: pointer;
+    letter-spacing: 0.18em; text-transform: uppercase; font-family: inherit;
+    transition: all 120ms ease;
   }
-  button:hover { filter: brightness(1.08); }
-  button.secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-  button.secondary:hover { color: var(--text); border-color: var(--text); }
-  button.icon { background: transparent; color: var(--muted); padding: 2px 6px; font-size: 14px; border: 1px solid transparent; border-radius: 4px; }
-  button.icon:hover { color: var(--text); border-color: var(--border); background: rgba(255,255,255,0.03); }
+  button:hover { background: var(--accent-2); border-color: var(--accent-2); }
+  button.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  button.secondary:hover { color: #000000; background: var(--text); border-color: var(--text); }
+  button.icon { background: transparent; color: var(--muted); padding: 2px 6px; font-size: 14px; border: 1px solid transparent; border-radius: 2px; letter-spacing: 0; text-transform: none; }
+  button.icon:hover { color: var(--accent); border-color: var(--border); background: rgba(255,255,255,0.03); }
   button:disabled { opacity: 0.5; cursor: not-allowed; }
   label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
   label input[type=checkbox] { accent-color: var(--accent); }
@@ -66,51 +106,91 @@
   #authbox .me { color: var(--muted); }
   #authbox .me b { color: var(--text); }
 
-  .sort-bar { display: flex; gap: 8px; margin-bottom: 10px; font-size: 12px; color: var(--muted); }
-  .sort-bar button { background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 4px 10px; border-radius: 999px; font-weight: 500; font-size: 12px; }
-  .sort-bar button.on { background: var(--accent); color: #0b0d10; border-color: var(--accent); }
+  .sort-bar { display: flex; gap: 8px; margin-bottom: 12px; font-size: 10px; color: var(--muted); align-items: center; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 600; }
+  .sort-bar button {
+    background: transparent; color: var(--muted); border: 1px solid var(--border);
+    padding: 6px 14px; border-radius: 2px; font-weight: 600; font-size: 10px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .sort-bar button:hover { color: var(--text); border-color: var(--muted); background: transparent; }
+  .sort-bar button.on { background: var(--accent); color: #ffffff; border-color: var(--accent); }
 
-  .post { display: grid; grid-template-columns: 44px 1fr; gap: 12px; }
+  .post { display: grid; grid-template-columns: 44px 1fr; gap: 14px; }
   .post .votecol { display: flex; flex-direction: column; align-items: center; gap: 2px; padding-top: 2px; }
   .post .votecol .score { font-weight: 600; font-variant-numeric: tabular-nums; font-size: 13px; }
   .post .up.on { color: var(--pos); }
   .post .down.on { color: var(--neg); }
-  .post .body h2 { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+  .post .body h2 { font-size: 17px; font-weight: 500; margin: 0 0 4px; letter-spacing: -0.01em; }
   .post .body .meta { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
   .post .body .meta a { color: var(--muted); }
-  .post .body .meta .tag { display: inline-block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; padding: 1px 6px; border-radius: 3px; background: rgba(78,163,255,0.15); color: var(--accent); margin-left: 6px; }
+  .post .body .meta .tag { display: inline-block; font-size: 9px; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 700; padding: 2px 8px; border-radius: 2px; background: var(--accent); color: #ffffff; margin-left: 6px; }
   .post .body .content { white-space: pre-wrap; word-wrap: break-word; }
-  .post .body .actions { margin-top: 6px; font-size: 12px; color: var(--muted); display: flex; gap: 12px; }
-  .post .body .actions button { background: transparent; border: 0; color: var(--muted); font-size: 12px; padding: 0; cursor: pointer; }
-  .post .body .actions button:hover { color: var(--text); }
+  .post .body .actions { margin-top: 8px; font-size: 12px; color: var(--muted); display: flex; gap: 12px; }
+  .post .body .actions button {
+    background: transparent; border: 0; color: var(--muted); font-size: 11px; padding: 0; cursor: pointer;
+    letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;
+  }
+  .post .body .actions button:hover { color: var(--accent); background: transparent; }
   .post.deleted .body .content { color: var(--muted); font-style: italic; }
 
-  .replies { margin-top: 10px; padding-left: 16px; border-left: 1px dashed var(--border); }
+  .replies { margin-top: 12px; padding-left: 16px; border-left: 2px solid var(--border); }
   .reply-form textarea { min-height: 60px; }
 
-  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 100; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(8px); }
   .modal.on { display: flex; }
-  .modal .panel { max-width: 420px; width: 92%; margin: 0; }
+  .modal .panel { max-width: 440px; width: 92%; margin: 0; padding: 24px; }
 
-  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--panel); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; font-size: 13px; z-index: 200; display: none; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--panel); border: 1px solid var(--border); padding: 12px 18px; border-radius: 2px; font-size: 13px; z-index: 200; display: none; }
   .toast.on { display: block; }
   .toast.ok { border-color: var(--pos); color: var(--pos); }
   .toast.err { border-color: var(--neg); color: var(--neg); }
   .msg.ok { color: var(--pos); }
   .msg.err { color: var(--neg); }
+
+  /* footer wordmark */
+  .site-footer {
+    margin-top: 56px; padding: 32px 0 8px;
+    border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+  .site-footer .wordmark {
+    font-weight: 700; font-size: 16px; color: var(--accent);
+    letter-spacing: 0.6em; padding-left: 0.6em;
+    text-transform: uppercase;
+  }
+  .site-footer .nom {
+    color: var(--muted); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+  }
+
+  @media (max-width: 640px) {
+    .brand .tag { display: none; }
+    header.pagehead h1 { font-size: 24px; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div>
-      <h1>Community · feature requests · discussion</h1>
-      <div class="sub">For the Tesla Robotaxi Scaling Predictor.</div>
-    </div>
+
+  <div class="topbar">
+    <a class="brand" href="./" aria-label="Tesla Robotaxi Predictor (independent tracker)">
+      <span class="wordmark">TESLA</span>
+      <span class="tag">Robotaxi Predictor</span>
+    </a>
+    <div class="spacer"></div>
     <nav>
-      <a href="./">← Dashboard</a>
-      <div id="authbox"></div>
+      <a href="./">Dashboard</a>
+      <a href="snapshots.html">Snapshots</a>
     </nav>
+  </div>
+
+  <header class="pagehead">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div>
+        <h1><span class="mark">Community</span></h1>
+        <div class="sub">Feature requests, discussion, and debate — for the Robotaxi Scaling Predictor.</div>
+      </div>
+      <div id="authbox"></div>
+    </div>
   </header>
 
   <!-- submit a new top-level post -->
@@ -139,6 +219,11 @@
   </div>
 
   <div id="feed"></div>
+
+  <footer class="site-footer">
+    <span class="wordmark">TESLA</span>
+    <span class="nom">Independent tracker · Not affiliated with Tesla, Inc.</span>
+  </footer>
 </div>
 
 <!-- auth modal -->

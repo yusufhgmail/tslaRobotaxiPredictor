@@ -104,9 +104,9 @@ def render(subject_suffix: str, ctx: dict, unsubscribe_url: str | None = None) -
         val = int(t["value"])
         eta_rows_html += (
             f"<tr>"
-            f"<td style='padding:4px 10px 4px 0;color:#8a94a3'>P50 to {val:,}</td>"
-            f"<td style='padding:4px 0'><b>{e.get('p50') or 'n/a'}</b>"
-            f" <span style='color:#8a94a3;font-size:12px'>"
+            f"<td style='padding:6px 12px 6px 0;color:#a8a8a8;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600'>P50 to {val:,}</td>"
+            f"<td style='padding:6px 0'><b style='font-weight:600'>{e.get('p50') or 'n/a'}</b>"
+            f" <span style='color:#a8a8a8;font-size:12px'>"
             f"(P25 {e.get('p25') or 'n/a'} · P75 {e.get('p75') or 'n/a'})</span></td>"
             f"</tr>"
         )
@@ -119,19 +119,19 @@ def render(subject_suffix: str, ctx: dict, unsubscribe_url: str | None = None) -
     news_text_lines = []
     if fresh_news:
         items_html = "".join(
-            f"<li style='margin:4px 0'>"
-            f"<span style='color:{'#34d399' if it['impact_score'] > 0 else '#f87171' if it['impact_score'] < 0 else '#9ca3af'};font-weight:600'>"
+            f"<li style='margin:6px 0'>"
+            f"<span style='color:{'#4ade80' if it['impact_score'] > 0 else '#e31937' if it['impact_score'] < 0 else '#737373'};font-weight:700'>"
             f"{'+' if it['impact_score'] > 0 else ''}{it['impact_score']}</span> "
-            f"<span style='color:#e6e9ee'>{it.get('title', '')}</span>"
-            f"<div style='color:#8a94a3;font-size:12px'>{it.get('impact_reason', '')}</div>"
+            f"<span style='color:#ffffff'>{it.get('title', '')}</span>"
+            f"<div style='color:#a8a8a8;font-size:12px'>{it.get('impact_reason', '')}</div>"
             f"</li>"
             for it in fresh_news
         )
         news_html = (
-            f"<h3 style='margin:16px 0 6px;font-size:13px;color:#8a94a3;"
-            f"text-transform:uppercase;letter-spacing:0.05em'>"
+            f"<h3 style='margin:18px 0 8px;font-size:11px;color:#a8a8a8;"
+            f"text-transform:uppercase;letter-spacing:0.14em;font-weight:600'>"
             f"New this week ({len(fresh_news)})</h3>"
-            f"<ul style='margin:0;padding-left:18px'>{items_html}</ul>"
+            f"<ul style='margin:0;padding-left:18px;list-style:none'>{items_html}</ul>"
         )
         for it in fresh_news:
             sign = "+" if it["impact_score"] > 0 else ""
@@ -140,43 +140,51 @@ def render(subject_suffix: str, ctx: dict, unsubscribe_url: str | None = None) -
             )
 
     html = f"""<!doctype html>
-<html><body style="background:#0b0d10;color:#e6e9ee;font-family:-apple-system,Segoe UI,sans-serif;padding:20px;margin:0">
-<div style="max-width:600px;margin:0 auto;background:#12161b;border:1px solid #1f262e;border-radius:10px;padding:20px">
-  <h1 style="margin:0 0 6px;font-size:18px">Tesla Robotaxi</h1>
-  <div style="color:#8a94a3;font-size:12px;margin-bottom:14px">
+<html><body style="background:#000000;color:#ffffff;font-family:'Inter','Helvetica Neue',Helvetica,Arial,-apple-system,'Segoe UI',sans-serif;padding:20px;margin:0">
+<div style="max-width:600px;margin:0 auto;background:#0f0f0f;border:1px solid #262626;border-radius:2px;padding:28px">
+  <div style="text-align:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #262626">
+    <div style="font-weight:700;font-size:20px;color:#e31937;letter-spacing:0.6em;padding-left:0.6em;text-transform:uppercase">TESLA</div>
+    <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:#a8a8a8;font-weight:500;margin-top:6px">Robotaxi Predictor</div>
+  </div>
+
+  <div style="color:#a8a8a8;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;margin-bottom:12px">
     Weekly update · {datetime.now(timezone.utc).strftime('%Y-%m-%d')}
   </div>
 
-  <div style="font-size:28px;font-weight:600;font-variant-numeric:tabular-nums">
-    {latest} <span style="color:#8a94a3;font-size:14px;font-weight:400">unsupervised</span>
+  <div style="font-size:36px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-0.02em">
+    {latest} <span style="color:#a8a8a8;font-size:14px;font-weight:400">unsupervised</span>
   </div>
-  <div style="color:#8a94a3;font-size:13px;margin-bottom:12px">{delta_text}</div>
+  <div style="color:#a8a8a8;font-size:13px;margin-bottom:18px">{delta_text}</div>
 
-  <table style="border-collapse:collapse;font-size:13px;margin-top:8px">
+  <table style="border-collapse:collapse;font-size:13px;margin-top:8px;width:100%">
     <tr>
-      <td style="padding:4px 10px 4px 0;color:#8a94a3">Weekly growth</td>
-      <td style="padding:4px 0"><b>{fit['rate_weekly'] * 100:.1f}%</b>
-        <span style="color:#8a94a3;font-size:12px">(doubles ~{fit['doubling_weeks']:.1f}w)</span></td>
+      <td style="padding:6px 12px 6px 0;color:#a8a8a8;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600">Weekly growth</td>
+      <td style="padding:6px 0"><b style="font-weight:600">{fit['rate_weekly'] * 100:.1f}%</b>
+        <span style="color:#a8a8a8;font-size:12px">(doubles ~{fit['doubling_weeks']:.1f}w)</span></td>
     </tr>
     {eta_rows_html}
     <tr>
-      <td style="padding:4px 10px 4px 0;color:#8a94a3">News rate shift</td>
-      <td style="padding:4px 0">{news_shift_pp:+.2f} pp/wk</td>
+      <td style="padding:6px 12px 6px 0;color:#a8a8a8;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600">News rate shift</td>
+      <td style="padding:6px 0">{news_shift_pp:+.2f} pp/wk</td>
     </tr>
   </table>
 
   {news_html}
 
-  <div style="margin-top:20px">
-    <a href="{DASHBOARD_URL}" style="display:inline-block;background:#4ea3ff;color:#0b0d10;
-      padding:8px 14px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px">
+  <div style="margin-top:24px;text-align:center">
+    <a href="{DASHBOARD_URL}" style="display:inline-block;background:#e31937;color:#ffffff;
+      padding:12px 26px;border-radius:2px;text-decoration:none;font-weight:600;font-size:11px;
+      letter-spacing:0.18em;text-transform:uppercase">
       Open dashboard</a>
   </div>
 
-  <div style="color:#8a94a3;font-size:11px;margin-top:16px;border-top:1px solid #1f262e;padding-top:10px">
+  <div style="color:#a8a8a8;font-size:11px;margin-top:24px;border-top:1px solid #262626;padding-top:14px;text-align:center">
     Generated automatically every Monday 13:00 UTC ·
-    <a href="{REPO_URL}" style="color:#8a94a3">source</a>
-    {f'· <a href="{unsubscribe_url}" style="color:#8a94a3">unsubscribe</a>' if unsubscribe_url else ''}
+    <a href="{REPO_URL}" style="color:#a8a8a8">source</a>
+    {f'· <a href="{unsubscribe_url}" style="color:#a8a8a8">unsubscribe</a>' if unsubscribe_url else ''}
+  </div>
+  <div style="color:#666;font-size:9px;margin-top:10px;text-align:center;letter-spacing:0.18em;text-transform:uppercase">
+    Independent tracker · Not affiliated with Tesla, Inc.
   </div>
 </div>
 </body></html>"""

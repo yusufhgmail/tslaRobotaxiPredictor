@@ -5,22 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Unsubscribe — Tesla Robotaxi Scaling Predictor</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-  :root { color-scheme: dark; --bg:#0b0d10; --panel:#12161b; --border:#1f262e;
-    --text:#e6e9ee; --muted:#8a94a3; --accent:#4ea3ff; --pos:#34d399; --neg:#f87171; }
+  :root { color-scheme: dark; --bg:#000000; --panel:#0f0f0f; --border:#262626;
+    --text:#ffffff; --muted:#a8a8a8; --accent:#e31937; --pos:#4ade80; --neg:#e31937; }
   * { box-sizing: border-box; }
   html, body { margin:0; padding:0; background:var(--bg); color:var(--text);
-    font-family:-apple-system,Segoe UI,Inter,system-ui,sans-serif; font-size:15px; line-height:1.5; }
-  .wrap { max-width:480px; margin:10vh auto 40px; padding:0 20px; text-align:center; }
-  .card { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:28px 24px; }
-  h1 { font-size:20px; font-weight:600; margin:0 0 10px; }
-  p { color:var(--muted); margin:6px 0; }
-  .state { font-size:16px; margin-top:14px; font-weight:500; }
+    font-family:"Inter","Helvetica Neue",Helvetica,Arial,-apple-system,"Segoe UI",system-ui,sans-serif;
+    font-size:15px; line-height:1.55;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .wrap { max-width:480px; margin:12vh auto 40px; padding:0 24px; text-align:center; }
+  .wordmark {
+    display:block; font-weight:700; font-size:18px; color:var(--accent);
+    letter-spacing:0.6em; padding-left:0.6em; text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .wordmark-tag {
+    display:block; font-size:10px; letter-spacing:0.25em; text-transform:uppercase;
+    color:var(--muted); font-weight:500; margin-bottom:28px;
+  }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:2px; padding:32px 28px; text-align:left; }
+  h1 { font-size:22px; font-weight:500; margin:0 0 10px; letter-spacing:-0.01em; }
+  p { color:var(--muted); margin:6px 0; font-size:14px; }
+  .state { font-size:16px; margin-top:16px; font-weight:500; }
   .ok { color:var(--pos); }
   .err { color:var(--neg); }
-  a { color:var(--accent); text-decoration:none; }
+  a { color:var(--accent); text-decoration:none; font-weight:500; }
   a:hover { text-decoration:underline; }
+  .back {
+    display:inline-block; margin-top:24px;
+    font-size:11px; letter-spacing:0.18em; text-transform:uppercase; font-weight:600;
+    color:var(--text); border:1px solid var(--border); padding:10px 20px; border-radius:2px;
+  }
+  .back:hover { background:var(--accent); border-color:var(--accent); color:#ffffff; text-decoration:none; }
   .spin { display:inline-block; width:14px; height:14px; border:2px solid var(--border);
     border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:-2px; }
   @keyframes spin { to { transform:rotate(360deg); } }
@@ -28,12 +48,17 @@
 </head>
 <body>
 <div class="wrap">
+  <a href="./" style="text-decoration:none">
+    <span class="wordmark">TESLA</span>
+    <span class="wordmark-tag">Robotaxi Predictor</span>
+  </a>
   <div class="card">
     <h1>Unsubscribing…</h1>
     <p>One moment.</p>
     <div class="state" id="state"><span class="spin"></span></div>
-    <p style="margin-top:24px"><a href="./">← Back to dashboard</a></p>
+    <div style="text-align:center;margin-top:8px"><a href="./" class="back">← Back to dashboard</a></div>
   </div>
+  <div style="color:#666;font-size:10px;text-transform:uppercase;letter-spacing:0.18em;margin-top:28px">Independent tracker · Not affiliated with Tesla, Inc.</div>
 </div>
 <script>
 const SUPABASE_URL = 'https://rpkxxdtgthzrucbnssjj.supabase.co';
