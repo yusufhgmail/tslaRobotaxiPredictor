@@ -230,10 +230,27 @@ def simulate(
         (anchor_dt + timedelta(weeks=int(w))).isoformat() for w in weeks
     ]
 
-    # When does each percentile cross each target?
+    # When does each percentile cross each target? Interpolate in log space
+    # between weekly ticks so the ETA is the exact date the continuous P50/P25
+    # line visually crosses the threshold, not the next weekly tick after it.
     def first_crossing(arr: np.ndarray, thresh: float) -> str | None:
         over = np.where(arr >= thresh)[0]
-        return forecast_dates[int(over[0])] if len(over) else None
+        if len(over) == 0:
+            return None
+        idx = int(over[0])
+        if idx == 0:
+            return forecast_dates[0]
+        prev = float(arr[idx - 1])
+        curr = float(arr[idx])
+        if prev <= 0 or curr <= 0 or curr <= prev:
+            frac = 0.0
+        else:
+            # Log-linear interpolation — fits exponential-growth curves.
+            frac = (math.log(thresh) - math.log(prev)) / (math.log(curr) - math.log(prev))
+            frac = max(0.0, min(1.0, frac))
+        crossing_days = ((idx - 1) + frac) * 7.0
+        crossing_dt = anchor_dt + timedelta(days=crossing_days)
+        return crossing_dt.isoformat()
 
     eta_by_target = {}
     for t in TARGETS:
