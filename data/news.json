@@ -9,6 +9,15 @@
     "captured_at": "2026-04-23T11:29:02+00:00"
   },
   {
+    "date": "2026-04-24",
+    "title": "Morgan Stanley Projects 1,000 Tesla Robotaxi Vehicles by End of 2026",
+    "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
+    "summary": "Morgan Stanley analyst forecasts Tesla will operate 1,000 robotaxi vehicles by end of 2026 and one million by 2035, framing unsupervised miles as a feedback loop accelerating FSD model improvement.",
+    "impact_score": 0,
+    "impact_reason": "Third-party projection lacks new operational facts or regulatory catalysts; analyst forecasts typically carry high uncertainty and do not directly move fleet scaling trajectory absent underlying business announcements.",
+    "captured_at": "2026-04-23T11:29:02+00:00"
+  },
+  {
     "date": "2026-04-23",
     "title": "Tesla Q1 Earnings Preview Highlights Robotaxi Rollout Widening to Dallas and Houston",
     "url": "https://stockinvest.us/digest/teslas-q1-earnings-robotaxi-expansion-and-surging-capex-take-center-stage",
@@ -43,15 +52,6 @@
     "impact_score": 2,
     "impact_reason": "Doubling the Austin geofence to over 170 square miles in rapid succession significantly increases the operational area for unsupervised rides, enabling more rides and data collection to accelerate fleet scaling.",
     "captured_at": "2026-04-24T12:50:58+00:00"
-  },
-  {
-    "date": "2026-04-20",
-    "title": "Dallas and Houston Robotaxi Fleets Reach 2 Vehicles Each After Launch",
-    "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
-    "summary": "Tesla deployed 2 unsupervised Robotaxi vehicles each in Dallas and Houston as of April 20, up from 1 at the April 18 launch. Austin fleet shows 13 active unsupervised vehicles in the last 30 days.",
-    "impact_score": 1,
-    "impact_reason": "Small initial fleet deployments of 2 unsupervised vehicles per new city mark an early step in scaling operations outside Austin, though modest size limits immediate velocity impact.",
-    "captured_at": "2026-04-23T11:29:02+00:00"
   },
   {
     "date": "2026-04-18",
