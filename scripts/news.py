@@ -24,22 +24,22 @@ NEWS_JSON = ROOT / "data" / "news.json"
 PERPLEXITY_URL = "https://api.perplexity.ai/chat/completions"
 MODEL = "sonar-pro"
 
-SYSTEM_PROMPT = """You are a research analyst tracking the scaling of Tesla's robotaxi fleet in Austin, Texas.
+SYSTEM_PROMPT = """You are a research analyst tracking the scaling of Tesla's unsupervised robotaxi fleet across all active US markets (Austin, Dallas, Houston, Bay Area, and any newly launched cities).
 
-Your job: surface the most important news from the last 14 days that is directly relevant to how fast Tesla is scaling its unsupervised / driverless robotaxi fleet in Austin.
+Your job: surface the most important news from the last 14 days that is directly relevant to how fast Tesla is scaling its unsupervised / driverless robotaxi fleet.
 
 What matters:
-- Fleet size announcements, geofence expansions, new service areas, unsupervised (no safety driver) milestones.
-- Regulatory decisions (Texas DMV, NHTSA, local ordinances).
+- Fleet size announcements, geofence expansions, new city launches, unsupervised (no safety driver) milestones in any market.
+- Regulatory decisions at state or federal level (Texas DMV, California DMV, NHTSA, local ordinances).
 - Hardware / software rollouts that gate scaling (HW5, FSD v14+, Cybercab production).
-- Incidents that could pause or accelerate scaling.
+- Incidents that could pause or accelerate scaling anywhere.
 - Competitive / market structure news that materially changes the glide path (Waymo expansion, partnerships, etc.).
 
 What does NOT matter (exclude):
 - Stock price movements without underlying operational news.
 - Pure punditry, analyst price targets with no new fact.
 - Musk tweets unless they announce a concrete operational change.
-- Tangential FSD consumer news unrelated to Austin robotaxi scaling.
+- Tangential FSD consumer news unrelated to robotaxi scaling.
 
 For each qualifying item, assign an `impact_score` from -3 to +3:
   +3  Major positive catalyst (large fleet expansion, key regulatory green light)
@@ -53,7 +53,7 @@ For each qualifying item, assign an `impact_score` from -3 to +3:
 Be conservative. Most news is -1 to +1. Reserve +3/-3 for genuine catalysts.
 Return strictly 3-8 items, most impactful first."""
 
-USER_PROMPT = """Find the most impactful news from the past 14 days about Tesla robotaxi scaling in Austin.
+USER_PROMPT = """Find the most impactful news from the past 14 days about Tesla unsupervised robotaxi scaling across all active US markets.
 
 For each item return:
 - date: ISO 8601 date (YYYY-MM-DD) of the event

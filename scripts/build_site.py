@@ -143,7 +143,7 @@ TEMPLATE = """<!doctype html>
   </div>
   <div class="sub">
     Unsupervised fleet vs. 1,800 re-rating threshold. Data from
-    <a href="https://robotaxitracker.com/?provider=tesla&area=austin" target="_blank" rel="noopener">robotaxitracker.com</a>.
+    <a href="https://robotaxitracker.com/?provider=tesla" target="_blank" rel="noopener">robotaxitracker.com</a>.
     Updated weekly · Last run: <span id="generated">—</span>
     · <a href="snapshots.html">📅 Past snapshots</a>
   </div>

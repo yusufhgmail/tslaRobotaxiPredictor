@@ -1,12 +1,14 @@
 """
-Pull Tesla Austin robotaxi data from robotaxitracker.com.
+Pull Tesla robotaxi data from robotaxitracker.com across all service areas.
 
 The site is backed by Convex and exposes a public HTTP query endpoint. We call
-the same `queries/fleet:getHomepageData` function the homepage uses, but with
-vehicleLimit=500 so we get the full fleet list. Each vehicle carries a
-`first_unsupervised_spotted` timestamp — that lets us reconstruct the full
-daily cumulative-unsupervised-fleet curve from launch (2026-01-22) through
-today, rather than only collecting one new point per weekly run.
+the same `queries/fleet:getHomepageData` function the homepage uses — without
+a `serviceAreaId` arg, so the response aggregates every active city (Austin,
+Dallas, Houston, Bay Area, and any future launches). `vehicleLimit=1000` pulls
+the full fleet list. Each vehicle carries a `first_unsupervised_spotted`
+timestamp — that lets us reconstruct the full daily cumulative-unsupervised-
+fleet curve from the very first activation through today, rather than only
+collecting one new point per weekly run.
 
 Outputs
 -------
@@ -36,9 +38,7 @@ import requests
 
 CONVEX_URL = "https://graceful-eel-151.convex.cloud/api/query"
 QUERY_PATH = "queries/fleet:getHomepageData"
-# Tesla Austin service area ID — discovered by inspecting the SSR payload.
-SERVICE_AREA_ID = "jx72bv82f8vfhp6n2hcd5ynq4h7yz7rn"
-VEHICLE_LIMIT = 500
+VEHICLE_LIMIT = 1000
 
 ROOT = Path(__file__).resolve().parent.parent
 HISTORY_CSV = ROOT / "data" / "history.csv"
@@ -63,7 +63,6 @@ def fetch() -> dict:
             "path": QUERY_PATH,
             "args": {
                 "provider": "tesla",
-                "serviceAreaId": SERVICE_AREA_ID,
                 "sortBy": "recently_discovered",
                 "tripLimit": 1,
                 "vehicleLimit": VEHICLE_LIMIT,

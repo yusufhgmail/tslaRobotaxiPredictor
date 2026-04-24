@@ -1,6 +1,6 @@
 # Tesla Robotaxi Scaling Predictor
 
-A weekly-updated dashboard that tracks Tesla's **unsupervised** (no-safety-driver) robotaxi fleet in Austin, projects future scaling as a probabilistic "fuzzy cloud", and overlays news with LLM-scored impact on the trajectory. The goal: predict when the unsupervised fleet crosses the **1,800-vehicle re-rating threshold**.
+A weekly-updated dashboard that tracks Tesla's **unsupervised** (no-safety-driver) robotaxi fleet across every active US market (Austin, Dallas, Houston, Bay Area, and any future launches), projects future scaling as a probabilistic "fuzzy cloud", and overlays news with LLM-scored impact on the trajectory. The goal: predict when the unsupervised fleet crosses the **1,800-vehicle re-rating threshold**.
 
 **Live chart:** `https://<your-github-username>.github.io/<this-repo>/` (once GitHub Pages is enabled — see setup below).
 
@@ -8,8 +8,8 @@ A weekly-updated dashboard that tracks Tesla's **unsupervised** (no-safety-drive
 
 Every Monday at 13:00 UTC, a GitHub Actions workflow:
 
-1. **`scripts/scrape.py`** — pulls the latest fleet metrics from [robotaxitracker.com](https://robotaxitracker.com/?provider=tesla&area=austin) by parsing the Next.js RSC stream embedded in the page. Extracts: total vehicles, active-30d, unsupervised count, cybercabs, deprecated, and unsupervised ride percentages. Appends one row to `data/history.csv`.
-2. **`scripts/news.py`** — queries Perplexity (`sonar-pro`) with a JSON-schema response to find the most impactful news of the last 14 days about Tesla robotaxi scaling in Austin. Each item is scored `-3..+3` on its likely impact to scaling velocity. Results merged into `data/news.json`.
+1. **`scripts/scrape.py`** — queries the Convex backend behind [robotaxitracker.com](https://robotaxitracker.com/?provider=tesla) for the full Tesla fleet across every service area. Each vehicle's `first_unsupervised_spotted` timestamp lets us reconstruct the daily cumulative-unsupervised curve from the first activation through today. Writes `data/history.csv` and `data/snapshot.json`.
+2. **`scripts/news.py`** — queries Perplexity (`sonar-pro`) with a JSON-schema response to find the most impactful news of the last 14 days about Tesla unsupervised robotaxi scaling across all active markets. Each item is scored `-3..+3` on its likely impact to scaling velocity. Results merged into `data/news.json`.
 3. **`scripts/forecast.py`** — fits an exponential to the log of the historical series, runs a 2,000-sample Monte Carlo forward 52 weeks, and produces a fuzzy cloud (P5/P25/P50/P75/P95 bands). News sentiment shifts the growth-rate prior (news score of +3 ≈ +3 pp/week, weighted by a 30-day half-life). Writes `data/forecast.json`.
 4. **`scripts/build_site.py`** — renders a single-file static page (`docs/index.html`) with Plotly.js showing the actual line, target, fuzzy cloud, subsampled trajectories, and a news timeline with impact markers underneath.
 5. Commits data + site, then deploys `docs/` to GitHub Pages.

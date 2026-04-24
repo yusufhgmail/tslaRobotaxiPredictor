@@ -142,7 +142,7 @@ def render(subject_suffix: str, ctx: dict, unsubscribe_url: str | None = None) -
     html = f"""<!doctype html>
 <html><body style="background:#0b0d10;color:#e6e9ee;font-family:-apple-system,Segoe UI,sans-serif;padding:20px;margin:0">
 <div style="max-width:600px;margin:0 auto;background:#12161b;border:1px solid #1f262e;border-radius:10px;padding:20px">
-  <h1 style="margin:0 0 6px;font-size:18px">Tesla Robotaxi — Austin</h1>
+  <h1 style="margin:0 0 6px;font-size:18px">Tesla Robotaxi</h1>
   <div style="color:#8a94a3;font-size:12px;margin-bottom:14px">
     Weekly update · {datetime.now(timezone.utc).strftime('%Y-%m-%d')}
   </div>
@@ -182,7 +182,7 @@ def render(subject_suffix: str, ctx: dict, unsubscribe_url: str | None = None) -
 </body></html>"""
 
     text = (
-        f"Tesla Robotaxi — Austin — weekly update\n"
+        f"Tesla Robotaxi — weekly update\n"
         f"{datetime.now(timezone.utc).strftime('%Y-%m-%d')}\n\n"
         f"  Unsupervised: {latest}\n"
         f"  {delta_text}\n"
