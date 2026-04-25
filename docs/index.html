@@ -510,6 +510,12 @@
 
   const btnLinear = document.getElementById('scale-linear');
   const btnLog = document.getElementById('scale-log');
+  // Linear-mode Y cap = top of the P5–P95 fuzzy band (with a small headroom),
+  // so the wide tail of high-end Monte Carlo trajectories doesn't squash the
+  // visible band against the bottom of the chart.
+  const p95Max = (data.p95 || []).reduce((m, v) => v > m ? v : m, 0);
+  const histMax = histY.reduce((m, v) => v > m ? v : m, 0);
+  const linearYMax = Math.max(p95Max, histMax) * 1.05;
   function setScale(mode) {
     btnLinear.classList.toggle('on', mode === 'linear');
     btnLog.classList.toggle('on', mode === 'log');
@@ -517,13 +523,19 @@
     if (thresholdIndices.length) {
       Plotly.restyle('chart', { visible: showThresholds ? true : 'legendonly' }, thresholdIndices);
     }
-    Plotly.relayout('chart', {
+    const update = {
       'yaxis.type': mode,
       'yaxis.rangemode': mode === 'linear' ? 'tozero' : 'normal',
-      'yaxis.autorange': true,
       annotations: showThresholds ? thresholdAnnotations.concat(etaAnnotations) : [],
       shapes: showThresholds ? etaShapes : [],
-    });
+    };
+    if (mode === 'linear' && linearYMax > 0) {
+      update['yaxis.autorange'] = false;
+      update['yaxis.range'] = [0, linearYMax];
+    } else {
+      update['yaxis.autorange'] = true;
+    }
+    Plotly.relayout('chart', update);
   }
   btnLinear.addEventListener('click', () => setScale('linear'));
   btnLog.addEventListener('click', () => setScale('log'));
