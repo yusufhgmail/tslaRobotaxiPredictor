@@ -22,6 +22,8 @@ from pathlib import Path
 
 import requests
 
+import email_state
+
 ROOT = Path(__file__).resolve().parent.parent
 HISTORY_CSV = ROOT / "data" / "history.csv"
 FORECAST_JSON = ROOT / "data" / "forecast.json"
@@ -148,7 +150,7 @@ def render(subject_suffix: str, ctx: dict, unsubscribe_url: str | None = None) -
   </div>
 
   <div style="color:#a8a8a8;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;margin-bottom:12px">
-    Weekly update · {datetime.now(timezone.utc).strftime('%Y-%m-%d')}
+    Update · {datetime.now(timezone.utc).strftime('%Y-%m-%d')}
   </div>
 
   <div style="font-size:36px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-0.02em">
@@ -179,7 +181,7 @@ def render(subject_suffix: str, ctx: dict, unsubscribe_url: str | None = None) -
   </div>
 
   <div style="color:#a8a8a8;font-size:11px;margin-top:24px;border-top:1px solid #262626;padding-top:14px;text-align:center">
-    Generated automatically every Monday 13:00 UTC ·
+    Sent only when the unsupervised count changes (we check daily 13:00 UTC) ·
     <a href="{REPO_URL}" style="color:#a8a8a8">source</a>
     {f'· <a href="{unsubscribe_url}" style="color:#a8a8a8">unsubscribe</a>' if unsubscribe_url else ''}
   </div>
@@ -190,7 +192,7 @@ def render(subject_suffix: str, ctx: dict, unsubscribe_url: str | None = None) -
 </body></html>"""
 
     text = (
-        f"Tesla Robotaxi — weekly update\n"
+        f"Tesla Robotaxi — fleet update\n"
         f"{datetime.now(timezone.utc).strftime('%Y-%m-%d')}\n\n"
         f"  Unsupervised: {latest}\n"
         f"  {delta_text}\n"
@@ -206,6 +208,18 @@ def render(subject_suffix: str, ctx: dict, unsubscribe_url: str | None = None) -
 
 
 def main() -> int:
+    no_email = "--no-email" in sys.argv
+
+    if no_email:
+        print("Notify skipped — manual run (--no-email).")
+        return 0
+
+    if not email_state.should_email():
+        last = email_state.get_last_emailed_count()
+        cur = email_state.get_current_count()
+        print(f"Notify skipped — count unchanged (last_emailed={last}, current={cur}).")
+        return 0
+
     api_key = os.environ.get("RESEND_API_KEY")
     to_addr = os.environ.get("NOTIFY_EMAIL")
     from_addr = os.environ.get("NOTIFY_FROM", DEFAULT_FROM)

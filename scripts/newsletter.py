@@ -25,6 +25,7 @@ import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import notify  # reuses render() and data-loading
+import email_state
 
 RESEND_URL = "https://api.resend.com/emails"
 FROM = "Robotaxi Predictor <onboarding@resend.dev>"
@@ -51,6 +52,16 @@ def list_subscribers(supabase_url: str, service_key: str) -> list[dict]:
 
 
 def main() -> int:
+    if "--no-email" in sys.argv:
+        print("Newsletter skipped — manual run (--no-email).")
+        return 0
+
+    if not email_state.should_email():
+        last = email_state.get_last_emailed_count()
+        cur = email_state.get_current_count()
+        print(f"Newsletter skipped — count unchanged (last_emailed={last}, current={cur}).")
+        return 0
+
     api_key = os.environ.get("RESEND_API_KEY")
     supabase_url = os.environ.get("SUPABASE_URL")
     service_key = os.environ.get("SUPABASE_SECRET_KEY")

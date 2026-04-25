@@ -1,10 +1,16 @@
-name: Weekly robotaxi update
+name: Daily robotaxi update
 
 on:
   schedule:
-    # Every Monday at 13:00 UTC (~09:00 ET / 08:00 CT Austin).
-    - cron: "0 13 * * 1"
-  workflow_dispatch: {}   # allow manual runs
+    # Every day at 13:00 UTC (~09:00 ET / 08:00 CT).
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+    inputs:
+      manual:
+        description: "Manual run (skip emails even if count changed)"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write   # to commit updated data
@@ -12,7 +18,7 @@ permissions:
   id-token: write   # to publish via OIDC
 
 concurrency:
-  group: weekly-update
+  group: daily-update
   cancel-in-progress: false
 
 jobs:
@@ -54,7 +60,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: weekly update $(date -u +%Y-%m-%d)"
+            git commit -m "chore: daily update $(date -u +%Y-%m-%d)"
             git push
           fi
 
@@ -67,14 +73,33 @@ jobs:
         uses: actions/deploy-pages@v4
 
       - name: Send summary email to owner
+        if: ${{ inputs.manual != true }}
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           NOTIFY_EMAIL: ${{ vars.NOTIFY_EMAIL }}
         run: python scripts/notify.py
 
       - name: Send newsletter to subscribers
+        if: ${{ inputs.manual != true }}
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
         run: python scripts/newsletter.py
+
+      - name: Mark count as emailed
+        if: ${{ inputs.manual != true }}
+        run: python scripts/mark_emailed.py
+
+      - name: Persist last_emailed state (if changed)
+        if: ${{ inputs.manual != true }}
+        run: |
+          git config user.name "robotaxi-bot"
+          git config user.email "robotaxi-bot@users.noreply.github.com"
+          if [ -f data/last_emailed.json ]; then
+            git add data/last_emailed.json
+            if ! git diff --cached --quiet; then
+              git commit -m "chore: record last_emailed $(date -u +%Y-%m-%d)"
+              git push
+            fi
+          fi

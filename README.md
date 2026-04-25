@@ -1,18 +1,19 @@
 # Tesla Robotaxi Scaling Predictor
 
-A weekly-updated dashboard that tracks Tesla's **unsupervised** (no-safety-driver) robotaxi fleet across every active US market (Austin, Dallas, Houston, Bay Area, and any future launches), projects future scaling as a probabilistic "fuzzy cloud", and overlays news with LLM-scored impact on the trajectory. The goal: predict when the unsupervised fleet crosses the **1,800-vehicle re-rating threshold**.
+A daily-updated dashboard that tracks Tesla's **unsupervised** (no-safety-driver) robotaxi fleet across every active US market (Austin, Dallas, Houston, Bay Area, and any future launches), projects future scaling as a probabilistic "fuzzy cloud", and overlays news with LLM-scored impact on the trajectory. The goal: predict when the unsupervised fleet crosses the **1,800-vehicle re-rating threshold**.
 
 **Live chart:** `https://<your-github-username>.github.io/<this-repo>/` (once GitHub Pages is enabled — see setup below).
 
 ## How it works
 
-Every Monday at 13:00 UTC, a GitHub Actions workflow:
+Every day at 13:00 UTC, a GitHub Actions workflow:
 
 1. **`scripts/scrape.py`** — queries the Convex backend behind [robotaxitracker.com](https://robotaxitracker.com/?provider=tesla) for the full Tesla fleet across every service area. Each vehicle's `first_unsupervised_spotted` timestamp lets us reconstruct the daily cumulative-unsupervised curve from the first activation through today. Writes `data/history.csv` and `data/snapshot.json`.
 2. **`scripts/news.py`** — queries Perplexity (`sonar-pro`) with a JSON-schema response to find the most impactful news of the last 14 days about Tesla unsupervised robotaxi scaling across all active markets. Each item is scored `-3..+3` on its likely impact to scaling velocity. Results merged into `data/news.json`.
 3. **`scripts/forecast.py`** — fits an exponential to the log of the historical series, runs a 2,000-sample Monte Carlo forward 52 weeks, and produces a fuzzy cloud (P5/P25/P50/P75/P95 bands). News sentiment shifts the growth-rate prior (news score of +3 ≈ +3 pp/week, weighted by a 30-day half-life). Writes `data/forecast.json`.
 4. **`scripts/build_site.py`** — renders a single-file static page (`docs/index.html`) with Plotly.js showing the actual line, target, fuzzy cloud, subsampled trajectories, and a news timeline with impact markers underneath.
 5. Commits data + site, then deploys `docs/` to GitHub Pages.
+6. **Email gating** — `scripts/notify.py` (owner) and `scripts/newsletter.py` (subscribers) only send when the current count differs from `data/last_emailed.json`. On flat days, no emails go out. On change days, emails fire once and the state file is bumped to the new count.
 
 When history is sparse (fewer than 3 points) the forecast is prior-dominated: weekly growth centered on 10% with wide spread, so the cloud is large until real data takes over.
 
@@ -26,8 +27,20 @@ When history is sparse (fewer than 3 points) the forecast is prior-dominated: we
 3. **Enable GitHub Pages**:
    - Repo → Settings → Pages → Source: **GitHub Actions**
 4. **Trigger the first run**:
-   - Actions tab → "Weekly robotaxi update" → "Run workflow"
-   - Subsequent runs happen every Monday automatically.
+   - Actions tab → "Daily robotaxi update" → "Run workflow"
+   - Subsequent runs happen every day at 13:00 UTC automatically.
+
+### Admin: manual update from the dashboard
+
+A "Manual update" button is available on the live dashboard for the owner only. To enable it on your browser, open DevTools console on `https://robotaxipredictor.com/` and run:
+
+```js
+window.tslaAdminSetPat('github_pat_xxx')   // store a fine-grained PAT (Actions: Read & Write on this repo)
+```
+
+Refresh — the button now appears in the header. Clicking it dispatches the `daily.yml` workflow with `manual: true`, which runs the full pipeline (scrape → news → forecast → build → deploy) **without sending emails** and **without bumping `last_emailed.json`**. Tomorrow's auto run still compares against the pre-manual count, so a real change still triggers a real email.
+
+To disable: `window.tslaAdminClearPat()` in console.
 
 ## Running locally
 
@@ -58,6 +71,7 @@ Edit `scripts/news.py` `SYSTEM_PROMPT` to tighten or loosen what counts as "impa
 - **`data/history.csv`** — one row per snapshot. Columns: `timestamp_utc, total_vehicles, total_with_test, active_30d, unsupervised, cybercabs, deprecated, unsupervised_percent_7d, unsupervised_percent_30d, unsupervised_percent_since_launch`. You can manually add historical rows if you have them — the forecast picks them up automatically.
 - **`data/news.json`** — accumulating list of scored news items, deduped by URL.
 - **`data/forecast.json`** — regenerated every run; consumed by `build_site.py`.
+- **`data/last_emailed.json`** — `{count, emailed_at}` of the most recent change-triggered email batch. Email gating compares the current count against this. Manual admin runs do not modify it.
 
 ## Caveats
 

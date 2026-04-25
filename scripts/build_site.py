@@ -187,6 +187,28 @@ TEMPLATE = """<!doctype html>
     border: 1px solid var(--border);
   }
   .btn-community:hover { background: var(--text); color: #000000; border-color: var(--text); }
+  .btn-admin {
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-admin:hover { background: var(--accent); color: #ffffff; border-color: var(--accent); }
+  .btn-admin[disabled] { opacity: 0.6; cursor: not-allowed; }
+  .admin-toast {
+    position: fixed; top: 20px; right: 20px; z-index: 2000;
+    background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    padding: 12px 16px; font-size: 12px; max-width: 360px; border-radius: 2px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+    transform: translateX(120%); transition: transform 220ms ease;
+  }
+  .admin-toast.on { transform: translateX(0); }
+  .admin-toast.ok { border-left-color: var(--pos); }
+  .admin-toast.err { border-left-color: var(--neg); }
+  .admin-link {
+    color: var(--muted); font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; text-decoration: none; cursor: pointer;
+    background: none; border: 0; font-family: inherit; padding: 0;
+  }
+  .admin-link:hover { color: var(--accent); }
   .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none;
     align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(8px); }
   .modal.on { display: flex; }
@@ -245,13 +267,14 @@ TEMPLATE = """<!doctype html>
       <div class="sub">
         Unsupervised fleet vs. 1,800 re-rating threshold. Data from
         <a href="https://robotaxitracker.com/?provider=tesla" target="_blank" rel="noopener">robotaxitracker.com</a>.
-        Updated weekly · Last run: <span id="generated">—</span>
+        Checked daily · Last run: <span id="generated">—</span>
         · <a href="snapshots.html">Past snapshots</a>
       </div>
     </div>
     <div class="header-actions">
       <a class="btn-community" href="community.html">Community</a>
       <button class="btn-subscribe" id="openSubscribe">Subscribe</button>
+      <button class="btn-subscribe btn-admin" id="adminManualUpdate" style="display:none">Manual update</button>
     </div>
   </div>
 
@@ -279,8 +302,8 @@ TEMPLATE = """<!doctype html>
 <div class="modal" id="subscribeModal">
   <div class="dialog">
     <button type="button" class="close" aria-label="Close" id="closeSubscribe">×</button>
-    <h2>Weekly robotaxi update</h2>
-    <p>Every <b>Monday at 08:00 CT / 13:00 UTC</b>, right after this dashboard refreshes, I'll email you a summary. One email a week. One-click unsubscribe in every email.</p>
+    <h2>Robotaxi fleet alerts</h2>
+    <p>I check the unsupervised count <b>daily at 13:00 UTC</b> and email a summary <b>only when the number changes</b>. No emails on flat days. One-click unsubscribe in every email.</p>
 
     <div class="preview" id="emailPreview">
       <div class="email-from">From: Robotaxi Predictor &lt;onboarding@resend.dev&gt;</div>
@@ -677,6 +700,95 @@ TEMPLATE = """<!doctype html>
     msg.className = 'msg ok';
     emailInput.value = '';
   });
+
+  // ---------- Admin: manual workflow trigger ----------
+  // Only Yusuf has the GitHub PAT (fine-grained, scoped to actions:write on
+  // this single repo) stored in localStorage. Without it, the button stays
+  // hidden. Triggered runs pass `manual: true` so notify.py + newsletter.py
+  // skip emails and the workflow does not update last_emailed.json.
+  const ADMIN_PAT_KEY = 'tslarp_admin_pat';
+  const ADMIN_REPO = 'yusufhgmail/tslaRobotaxiPredictor';
+  const ADMIN_WORKFLOW = 'daily.yml';
+  const adminBtn = document.getElementById('adminManualUpdate');
+
+  function adminToast(text, kind) {
+    const el = document.createElement('div');
+    el.className = 'admin-toast ' + (kind || '');
+    el.textContent = text;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => el.classList.add('on'));
+    setTimeout(() => {
+      el.classList.remove('on');
+      setTimeout(() => el.remove(), 240);
+    }, 4500);
+  }
+
+  function adminVisible() {
+    return !!(localStorage.getItem(ADMIN_PAT_KEY) || '').trim();
+  }
+
+  function refreshAdminUI() {
+    if (adminBtn) adminBtn.style.display = adminVisible() ? 'inline-flex' : 'none';
+  }
+
+  // Hidden setup hooks — paste in console:
+  //   window.tslaAdminSetPat('github_pat_xxx')   to enable the button
+  //   window.tslaAdminClearPat()                 to disable
+  window.tslaAdminSetPat = (pat) => {
+    if (typeof pat !== 'string' || pat.length < 20) {
+      console.warn('PAT looks invalid (too short).'); return;
+    }
+    localStorage.setItem(ADMIN_PAT_KEY, pat.trim());
+    refreshAdminUI();
+    console.log('Admin PAT saved. Manual update button is now visible.');
+  };
+  window.tslaAdminClearPat = () => {
+    localStorage.removeItem(ADMIN_PAT_KEY);
+    refreshAdminUI();
+    console.log('Admin PAT cleared.');
+  };
+
+  if (adminBtn) {
+    adminBtn.addEventListener('click', async () => {
+      const pat = (localStorage.getItem(ADMIN_PAT_KEY) || '').trim();
+      if (!pat) {
+        adminToast('No admin PAT — set one via tslaAdminSetPat() in console.', 'err');
+        return;
+      }
+      if (!confirm('Trigger a manual update? No emails will be sent.')) return;
+      adminBtn.disabled = true;
+      const oldText = adminBtn.textContent;
+      adminBtn.textContent = 'Dispatching…';
+      try {
+        const r = await fetch(
+          `https://api.github.com/repos/${ADMIN_REPO}/actions/workflows/${ADMIN_WORKFLOW}/dispatches`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + pat,
+              'Accept': 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ref: 'main', inputs: { manual: 'true' } }),
+          }
+        );
+        if (r.status === 204) {
+          adminToast('Manual update started. Check the Actions tab — site will refresh in ~1–2 min.', 'ok');
+        } else {
+          const body = await r.text();
+          adminToast(`Dispatch failed (${r.status}): ${body.slice(0, 160)}`, 'err');
+        }
+      } catch (e) {
+        adminToast('Network error: ' + e.message, 'err');
+      } finally {
+        adminBtn.disabled = false;
+        adminBtn.textContent = oldText;
+      }
+    });
+  }
+
+  refreshAdminUI();
 })();
 </script>
 </body>
