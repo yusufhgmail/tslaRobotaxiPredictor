@@ -45,6 +45,24 @@
     "captured_at": "2026-04-24T15:39:56+00:00"
   },
   {
+    "date": "2026-04-23",
+    "title": "Tesla Completes Final Chip Design for AI5 Inference Processor",
+    "url": "https://www.thewealthadvisor.com/article/tesla-shares-jump-after-earnings-beat-margins-profitability-and-robotaxi-progress",
+    "summary": "Tesla completed the final chip design for its next-generation AI5 inference processor.",
+    "impact_score": 1,
+    "impact_reason": "AI5 tape-out mildly supports long-term scaling by reducing hardware dependency, potentially enabling more efficient fleet-wide inference.",
+    "captured_at": "2026-04-25T08:51:37+00:00"
+  },
+  {
+    "date": "2026-04-23",
+    "title": "Morgan Stanley Highlights Tesla's Unsupervised Robotaxi Progress from Austin Rollout",
+    "url": "https://www.youtube.com/watch?v=q0xqAD0b1X0",
+    "summary": "Morgan Stanley noted Tesla's unsupervised robotaxi launch as tangible progress, evolving from the initial Austin rollout that relied on human safety monitors for several months.",
+    "impact_score": 1,
+    "impact_reason": "Confirmation of transition to fully unsupervised in Austin provides mild positive validation of scaling progress in the original market.",
+    "captured_at": "2026-04-25T08:51:37+00:00"
+  },
+  {
     "date": "2026-04-22",
     "title": "Tesla Plans to Double Austin Robotaxi Fleet to ~60 by December",
     "url": "https://www.notateslaapp.com/news/3367/tesla-to-double-austin-robotaxi-fleet-but-will-it-meet-its-2025-target",
