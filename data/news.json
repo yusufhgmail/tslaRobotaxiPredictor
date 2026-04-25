@@ -48,18 +48,18 @@
     "date": "2026-04-23",
     "title": "Tesla Completes Final Chip Design for AI5 Inference Processor",
     "url": "https://www.thewealthadvisor.com/article/tesla-shares-jump-after-earnings-beat-margins-profitability-and-robotaxi-progress",
-    "summary": "Tesla completed the final chip design for its next-generation AI5 inference processor.",
+    "summary": "Tesla completed the final chip design for its next-generation AI5 inference processor, reducing dependence on third-party silicon suppliers.",
     "impact_score": 1,
-    "impact_reason": "AI5 tape-out mildly supports long-term scaling by reducing hardware dependency, potentially enabling more efficient fleet-wide inference.",
+    "impact_reason": "AI5 chip milestone gates software performance improvements essential for unsupervised scaling across larger fleets.",
     "captured_at": "2026-04-25T08:51:37+00:00"
   },
   {
     "date": "2026-04-23",
-    "title": "Morgan Stanley Highlights Tesla's Unsupervised Robotaxi Progress from Austin Rollout",
+    "title": "Morgan Stanley Highlights Tesla's Unsupervised Robotaxi Progress in Austin",
     "url": "https://www.youtube.com/watch?v=q0xqAD0b1X0",
-    "summary": "Morgan Stanley noted Tesla's unsupervised robotaxi launch as tangible progress, evolving from the initial Austin rollout that relied on human safety monitors for several months.",
+    "summary": "Morgan Stanley noted Tesla's unsupervised robotaxi launch as tangible progress, evolving from the Austin rollout that initially used human safety monitors for months. Analysts view it as creating a flywheel for incremental unsupervised miles improving the autonomy model.",
     "impact_score": 1,
-    "impact_reason": "Confirmation of transition to fully unsupervised in Austin provides mild positive validation of scaling progress in the original market.",
+    "impact_reason": "Confirms transition to fully unsupervised operations in existing Austin market, supporting steady fleet scaling through improved reliability and data accumulation.",
     "captured_at": "2026-04-25T08:51:37+00:00"
   },
   {
