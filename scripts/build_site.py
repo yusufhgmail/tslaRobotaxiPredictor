@@ -528,8 +528,9 @@ TEMPLATE = """<!doctype html>
     },
     legend: { orientation: 'h', y: -0.14, font: { size: 11 } },
     hovermode: 'x unified',
+    dragmode: false,
   };
-  Plotly.newPlot('chart', chartTraces, chartLayoutBase, { displaylogo: false, responsive: true, displayModeBar: false });
+  Plotly.newPlot('chart', chartTraces, chartLayoutBase, { displaylogo: false, responsive: true, displayModeBar: false, scrollZoom: false, doubleClick: false });
 
   const thresholdStartIdx = 2 + sampleTraces.length + 1;
   const thresholdIndices = thresholdTraces.map((_, i) => thresholdStartIdx + i);
@@ -635,7 +636,8 @@ TEMPLATE = """<!doctype html>
     },
     showlegend: false,
     hovermode: 'closest',
-  }, { displaylogo: false, responsive: true, displayModeBar: false });
+    dragmode: false,
+  }, { displaylogo: false, responsive: true, displayModeBar: false, scrollZoom: false, doubleClick: false });
 
   // ---------- news list ----------
   const nl = document.getElementById('newslist');
