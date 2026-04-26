@@ -72,12 +72,12 @@
     "captured_at": "2026-04-24T12:50:58+00:00"
   },
   {
-    "date": "2026-04-20",
-    "title": "Dallas and Houston Robotaxi Availability Remains Low Post-Launch",
+    "date": "2026-04-21",
+    "title": "Austin Unsupervised Robotaxi Fleet at 13 Vehicles, Bay Area Over 500 but with Safety Drivers",
     "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
-    "summary": "Robotaxi Tracker data shows 0-2% availability in Dallas and Houston over the first 24 hours after launch, with only brief spikes. Service has been largely unavailable since Saturday despite some successful rides.",
-    "impact_score": -1,
-    "impact_reason": "Low availability with tiny fleets of two vehicles per city constrains ride volume and data collection, slowing the velocity of scaling in these new markets.",
+    "summary": "Tesla's Austin fleet shows 13 unsupervised vehicles active in the last 30 days. The Bay Area fleet exceeds 500 vehicles since launch but requires safety drivers due to California regulations.",
+    "impact_score": 0,
+    "impact_reason": "Provides current baseline fleet sizes in active markets but reflects no change, remaining neutral for scaling velocity.",
     "captured_at": "2026-04-23T11:29:02+00:00"
   },
   {
