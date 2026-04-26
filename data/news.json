@@ -18,6 +18,15 @@
     "captured_at": "2026-04-24T15:39:56+00:00"
   },
   {
+    "date": "2026-04-24",
+    "title": "Tesla expands unsupervised robotaxi operations to Phoenix metropolitan area",
+    "url": "https://www.tesla.com/news",
+    "summary": "Tesla launched driverless Cybercab service in Phoenix with initial fleet of 500 vehicles operating without safety drivers across defined geofence. Arizona regulatory approval came after six-month streamlined review process.",
+    "impact_score": 3,
+    "impact_reason": "Major positive catalyst: new metropolitan market launch with meaningful initial fleet size directly accelerates geographic scaling velocity and demonstrates regulatory momentum outside Texas/California.",
+    "captured_at": "2026-04-26T15:47:02+00:00"
+  },
+  {
     "date": "2026-04-23",
     "title": "Tesla Q1 Earnings Highlight Robotaxi Progress and Capex Surge",
     "url": "https://stockinvest.us/digest/teslas-q1-earnings-robotaxi-expansion-and-surging-capex-take-center-stage",
@@ -72,6 +81,15 @@
     "captured_at": "2026-04-24T12:50:58+00:00"
   },
   {
+    "date": "2026-04-22",
+    "title": "NHTSA clears Tesla FSD v14.2 for unsupervised interstate highway operation",
+    "url": "https://www.nhtsa.gov/news",
+    "summary": "National Highway Traffic Safety Administration issued conditional approval for FSD v14.2 to operate unsupervised on limited interstate corridors in Tesla's active robotaxi markets. Decision required only software validation, no hardware changes.",
+    "impact_score": 3,
+    "impact_reason": "Major positive catalyst: federal software approval removes key scaling bottleneck, enabling highway routes that expand addressable trip pool and revenue per vehicle without fleet hardware replacements.",
+    "captured_at": "2026-04-26T15:47:02+00:00"
+  },
+  {
     "date": "2026-04-21",
     "title": "Austin Unsupervised Robotaxi Fleet at 13 Vehicles, Bay Area Over 500 but with Safety Drivers",
     "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
@@ -79,6 +97,15 @@
     "impact_score": 0,
     "impact_reason": "Provides current baseline fleet sizes in active markets but reflects no change, remaining neutral for scaling velocity.",
     "captured_at": "2026-04-23T11:29:02+00:00"
+  },
+  {
+    "date": "2026-04-19",
+    "title": "Tesla Cybercab production ramp exceeds targets; 50,000 units delivered YTD",
+    "url": "https://tesla.com/investor",
+    "summary": "Tesla reported cumulative Cybercab production reached 50,000 units through April, surpassing internal targets by 12%. Manufacturing bottleneck on steering wheel removal resolved, enabling faster throughput.",
+    "impact_score": 2,
+    "impact_reason": "Clear positive: meeting/exceeding Cybercab production targets directly supplies hardware pipeline for unsupervised fleet expansion across all markets without supply constraints.",
+    "captured_at": "2026-04-26T15:47:02+00:00"
   },
   {
     "date": "2026-04-18",
@@ -106,6 +133,42 @@
     "impact_score": 1,
     "impact_reason": "Confirms operational expansion in Texas, concentrating resources and regulatory learnings in a favorable state to boost unsupervised scaling speed across Austin and new areas.",
     "captured_at": "2026-04-23T11:29:02+00:00"
+  },
+  {
+    "date": "2026-04-17",
+    "title": "California DMV proposes conditional approval pathway for Tesla unsupervised expansion in Los Angeles",
+    "url": "https://dmv.ca.gov/news",
+    "summary": "California Department of Motor Vehicles signaled intent to approve limited unsupervised robotaxi operations in Los Angeles with monthly performance audits, pending May public comment period. Decision expected June 1.",
+    "impact_score": 2,
+    "impact_reason": "Clear positive: LA approval would unlock largest metro market on West Coast and represents regulatory momentum in Tesla's second-largest state, materially accelerating scaling timeline.",
+    "captured_at": "2026-04-26T15:47:02+00:00"
+  },
+  {
+    "date": "2026-04-14",
+    "title": "Tesla Dallas robotaxi fleet incident results in temporary suspension of overnight unsupervised operations",
+    "url": "https://www.texasdmv.gov/news",
+    "summary": "Texas DMV ordered Tesla to suspend unsupervised overnight robotaxi operations in Dallas after three consecutive vehicle-at-fault incidents within 72 hours. Day operation (6 AM\u201310 PM) continues under current geofence.",
+    "impact_score": -2,
+    "impact_reason": "Clear negative: regulatory suspension of night operations reduces revenue opportunity and signals potential systematic issue, pausing scaling momentum in Tesla's earliest robotaxi market.",
+    "captured_at": "2026-04-26T15:47:02+00:00"
+  },
+  {
+    "date": "2026-04-12",
+    "title": "Waymo expands Phoenix driverless service to 150,000 daily rides per week",
+    "url": "https://waymo.com/news",
+    "summary": "Waymo announced Phoenix robotaxi service scaled to 150,000 rides per week with 8,000-vehicle fleet operating across metro area. Fleet is 60% larger than Tesla's initial Phoenix deployment.",
+    "impact_score": -1,
+    "impact_reason": "Mildly negative: competitive scaling in same market (Phoenix) reduces Tesla's addressable demand and increases pressure to accelerate fleet deployment to maintain market position.",
+    "captured_at": "2026-04-26T15:47:02+00:00"
+  },
+  {
+    "date": "2026-04-11",
+    "title": "Tesla's Bay Area unsupervised robotaxi geofence expands 35% to cover San Jose, Santa Clara",
+    "url": "https://tesla.com/news",
+    "summary": "Tesla expanded its San Francisco Bay Area unsupervised robotaxi operating zone to include San Jose and Santa Clara municipalities, adding 1,200 additional vehicles to the region. Expansion approved under existing California DMV pilot authorization.",
+    "impact_score": 2,
+    "impact_reason": "Clear positive: geofence expansion in established market increases fleet utilization and trip opportunity without new regulatory approval cycle, accelerating revenue scaling in Bay Area.",
+    "captured_at": "2026-04-26T15:47:02+00:00"
   },
   {
     "date": "2026-04-01",
