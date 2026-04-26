@@ -524,6 +524,7 @@ TEMPLATE = """<!doctype html>
       gridcolor: '#262626', zerolinecolor: '#262626',
       title: 'Unsupervised robotaxis',
       type: 'log',
+      hoverformat: ',d',
     },
     legend: { orientation: 'h', y: -0.14, font: { size: 11 } },
     hovermode: 'x unified',
