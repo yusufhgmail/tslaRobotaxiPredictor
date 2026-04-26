@@ -62,7 +62,7 @@ begin
     confirm_url := site_url || 'confirm.html?token=' || new.confirmation_token;
 
     html :=
-        '<p>Thanks for subscribing to the weekly Tesla robotaxi scaling update.</p>' ||
+        '<p>Thanks for subscribing to Tesla robotaxi scaling updates. We check the unsupervised count daily and only email when it changes &mdash; no emails on flat days.</p>' ||
         '<p>Click to confirm your email:</p>' ||
         '<p><a href="' || confirm_url ||
         '" style="display:inline-block;background:#4ea3ff;color:#0b0d10;padding:10px 18px;' ||
