@@ -72,21 +72,12 @@
     "captured_at": "2026-04-24T12:50:58+00:00"
   },
   {
-    "date": "2026-04-22",
-    "title": "Tesla Completes Final Chip Design for AI5 Inference Processor",
-    "url": "https://www.thewealthadvisor.com/article/tesla-shares-jump-after-earnings-beat-margins-profitability-and-robotaxi-progress",
-    "summary": "Tesla completed the final chip design for its next-generation AI5 inference processor, reducing dependence on third-party silicon.",
-    "impact_score": 1,
-    "impact_reason": "Finalizing AI5 chip design mildly positively impacts long-term scaling by securing in-house hardware for expanded unsupervised fleet compute needs.",
-    "captured_at": "2026-04-25T08:51:37+00:00"
-  },
-  {
     "date": "2026-04-20",
-    "title": "Tesla Dallas-Houston Robotaxi Fleet Doubles to Four Vehicles",
+    "title": "Dallas and Houston Robotaxi Availability Remains Low Post-Launch",
     "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
-    "summary": "Crowdsourced Robotaxi Tracker data shows Tesla increased its unsupervised fleet from one to two vehicles in both Dallas and Houston within days of launch. Availability remained low at 0-2% over the first 24 hours with brief spikes.",
-    "impact_score": 1,
-    "impact_reason": "Doubling fleet size in new cities shortly after launch indicates early scaling progress, though low availability tempers the velocity impact.",
+    "summary": "Robotaxi Tracker data shows 0-2% availability in Dallas and Houston over the first 24 hours after launch, with only brief spikes. Service has been largely unavailable since Saturday despite some successful rides.",
+    "impact_score": -1,
+    "impact_reason": "Low availability with tiny fleets of two vehicles per city constrains ride volume and data collection, slowing the velocity of scaling in these new markets.",
     "captured_at": "2026-04-23T11:29:02+00:00"
   },
   {
@@ -115,5 +106,14 @@
     "impact_score": 1,
     "impact_reason": "Confirms operational expansion in Texas, concentrating resources and regulatory learnings in a favorable state to boost unsupervised scaling speed across Austin and new areas.",
     "captured_at": "2026-04-23T11:29:02+00:00"
+  },
+  {
+    "date": "2026-04-01",
+    "title": "Tesla Reports Paid Robotaxi Miles Nearly Doubled Sequentially in Q1",
+    "url": "https://www.thewealthadvisor.com/article/tesla-shares-jump-after-earnings-beat-margins-profitability-and-robotaxi-progress",
+    "summary": "Tesla disclosed that paid robotaxi miles nearly doubled sequentially in Q1 2026 across its active markets. FSD version 14.3 launched in April with enhancements to reinforcement learning and neural network vision.",
+    "impact_score": 1,
+    "impact_reason": "Doubling paid robotaxi miles indicates growing utilization and software improvements that support incremental fleet scaling without new hardware.",
+    "captured_at": "2026-04-25T08:51:37+00:00"
   }
 ]
