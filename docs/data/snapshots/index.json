@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-04-26",
+    "file": "data/snapshots/2026-04-26.json",
+    "latest": 19.0,
+    "weekly_growth_pct": 16.2,
+    "eta_1000": "2026-10-14",
+    "eta_1800": "2026-11-08",
+    "n_points": 95
+  },
+  {
     "date": "2026-04-25",
     "file": "data/snapshots/2026-04-25.json",
     "latest": 19.0,

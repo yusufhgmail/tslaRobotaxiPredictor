@@ -19,11 +19,11 @@
   },
   {
     "date": "2026-04-23",
-    "title": "Tesla Q1 Earnings Preview Highlights Robotaxi Rollout Widening to Dallas and Houston",
+    "title": "Tesla Q1 Earnings Highlight Robotaxi Progress and Capex Surge",
     "url": "https://stockinvest.us/digest/teslas-q1-earnings-robotaxi-expansion-and-surging-capex-take-center-stage",
-    "summary": "Tesla is expanding its Robotaxi rollout to Dallas and Houston amid Q1 earnings preparations, alongside a planned capex surge to $20B focused on autonomous capabilities.",
+    "summary": "Tesla's Q1 earnings emphasized widening robotaxi rollout to Dallas and Houston alongside a planned capex surge to $20B for autonomous initiatives. This underscores commitment to scaling operations.",
     "impact_score": 2,
-    "impact_reason": "New city launches in Dallas and Houston directly accelerate unsupervised robotaxi scaling by expanding geofences and active markets in Texas.",
+    "impact_reason": "Earnings confirmation of expansion with $20B capex allocation provides clear positive signal for sustained investment in unsupervised robotaxi infrastructure and growth.",
     "captured_at": "2026-04-24T14:57:05+00:00"
   },
   {
@@ -43,15 +43,6 @@
     "impact_score": 0,
     "impact_reason": "Neutral: macro market analysis without Tesla-specific operational milestones; provides context but does not directly advance or constrain Tesla's fleet deployment velocity.",
     "captured_at": "2026-04-24T15:39:56+00:00"
-  },
-  {
-    "date": "2026-04-23",
-    "title": "Tesla Completes Final Chip Design for AI5 Inference Processor",
-    "url": "https://www.thewealthadvisor.com/article/tesla-shares-jump-after-earnings-beat-margins-profitability-and-robotaxi-progress",
-    "summary": "Tesla completed the final chip design for its next-generation AI5 inference processor, reducing dependence on third-party silicon suppliers.",
-    "impact_score": 1,
-    "impact_reason": "AI5 chip milestone gates software performance improvements essential for unsupervised scaling across larger fleets.",
-    "captured_at": "2026-04-25T08:51:37+00:00"
   },
   {
     "date": "2026-04-23",
@@ -115,5 +106,14 @@
     "impact_score": 1,
     "impact_reason": "Confirms operational expansion in Texas, concentrating resources and regulatory learnings in a favorable state to boost unsupervised scaling speed across Austin and new areas.",
     "captured_at": "2026-04-23T11:29:02+00:00"
+  },
+  {
+    "date": "2026-04-01",
+    "title": "Tesla Launches FSD Version 14.3 with Key Autonomy Improvements",
+    "url": "https://www.thewealthadvisor.com/article/tesla-shares-jump-after-earnings-beat-margins-profitability-and-robotaxi-progress",
+    "summary": "FSD version 14.3 launched in April with improvements to reinforcement learning, neural network vision, and inference latency. Paid robotaxi miles nearly doubled sequentially in Q1.",
+    "impact_score": 2,
+    "impact_reason": "Software rollout of FSD v14.3 and doubled paid robotaxi miles indicate clear positive progress in unsupervised reliability and utilization, gating faster fleet scaling.",
+    "captured_at": "2026-04-25T08:51:37+00:00"
   }
 ]
