@@ -72,6 +72,15 @@
     "captured_at": "2026-04-24T12:50:58+00:00"
   },
   {
+    "date": "2026-04-22",
+    "title": "Tesla Completes Final Chip Design for AI5 Inference Processor",
+    "url": "https://www.thewealthadvisor.com/article/tesla-shares-jump-after-earnings-beat-margins-profitability-and-robotaxi-progress",
+    "summary": "Tesla completed the final chip design for its next-generation AI5 inference processor, reducing dependence on third-party silicon.",
+    "impact_score": 1,
+    "impact_reason": "Finalizing AI5 chip design mildly positively impacts long-term scaling by securing in-house hardware for expanded unsupervised fleet compute needs.",
+    "captured_at": "2026-04-25T08:51:37+00:00"
+  },
+  {
     "date": "2026-04-20",
     "title": "Tesla Dallas-Houston Robotaxi Fleet Doubles to Four Vehicles",
     "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
@@ -106,14 +115,5 @@
     "impact_score": 1,
     "impact_reason": "Confirms operational expansion in Texas, concentrating resources and regulatory learnings in a favorable state to boost unsupervised scaling speed across Austin and new areas.",
     "captured_at": "2026-04-23T11:29:02+00:00"
-  },
-  {
-    "date": "2026-04-01",
-    "title": "Tesla Launches FSD Version 14.3 with Key Autonomy Improvements",
-    "url": "https://www.thewealthadvisor.com/article/tesla-shares-jump-after-earnings-beat-margins-profitability-and-robotaxi-progress",
-    "summary": "FSD version 14.3 launched in April with improvements to reinforcement learning, neural network vision, and inference latency. Paid robotaxi miles nearly doubled sequentially in Q1.",
-    "impact_score": 2,
-    "impact_reason": "Software rollout of FSD v14.3 and doubled paid robotaxi miles indicate clear positive progress in unsupervised reliability and utilization, gating faster fleet scaling.",
-    "captured_at": "2026-04-25T08:51:37+00:00"
   }
 ]
