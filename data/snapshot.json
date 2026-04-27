@@ -1,11 +1,11 @@
 {
-  "fetched_at": "2026-04-26T15:46:51+00:00",
+  "fetched_at": "2026-04-27T15:09:57+00:00",
   "totalVehiclesCount": 647.0,
   "totalVehiclesCountWithTest": 695.0,
-  "recentVehiclesCount30d": 165.0,
+  "recentVehiclesCount30d": 164.0,
   "unsupervisedPassengerCount": 19.0,
   "cybercabCount": 48.0,
-  "deprecatedCount": 482.0,
+  "deprecatedCount": 483.0,
   "unsupervisedRideShareWindows": null,
   "unsupervisedRideShareSince": null,
   "vehicles_returned": 647

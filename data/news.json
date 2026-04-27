@@ -63,6 +63,15 @@
     "captured_at": "2026-04-25T08:51:37+00:00"
   },
   {
+    "date": "2026-04-23",
+    "title": "Tesla targets robotaxi operations in dozen US states by end of 2026",
+    "url": "https://www.basenor.com/blogs/news/tesla-fsd-robotaxi-roadmap-q4-launch-12-states-europe",
+    "summary": "Tesla outlined plans for unsupervised FSD and robotaxi operations across roughly a dozen US states by end of 2026, expanding from current Texas cities and including Las Vegas, Miami, Orlando, Phoenix, Tampa.",
+    "impact_score": 2,
+    "impact_reason": "Specific commitment to 12-state expansion by year-end provides clear roadmap for rapid geofence and market growth, signaling high scaling ambition.",
+    "captured_at": "2026-04-27T15:10:05+00:00"
+  },
+  {
     "date": "2026-04-22",
     "title": "Tesla Plans to Double Austin Robotaxi Fleet to ~60 by December",
     "url": "https://www.notateslaapp.com/news/3367/tesla-to-double-austin-robotaxi-fleet-but-will-it-meet-its-2025-target",
@@ -90,12 +99,12 @@
     "captured_at": "2026-04-26T15:47:02+00:00"
   },
   {
-    "date": "2026-04-21",
-    "title": "Austin Unsupervised Robotaxi Fleet at 13 Vehicles, Bay Area Over 500 but with Safety Drivers",
+    "date": "2026-04-20",
+    "title": "Bay Area Tesla robotaxi fleet exceeds 500 vehicles since launch",
     "url": "https://eletric-vehicles.com/tesla/teslas-dallas-houston-robotaxi-fleet-at-four-vehicles-after-first-expansion/",
-    "summary": "Tesla's Austin fleet shows 13 unsupervised vehicles active in the last 30 days. The Bay Area fleet exceeds 500 vehicles since launch but requires safety drivers due to California regulations.",
-    "impact_score": 0,
-    "impact_reason": "Provides current baseline fleet sizes in active markets but reflects no change, remaining neutral for scaling velocity.",
+    "summary": "Tesla's Bay Area robotaxi fleet has reached over 500 vehicles since launch, contrasting with smaller Texas deployments.",
+    "impact_score": 1,
+    "impact_reason": "Confirms large-scale unsupervised operations already active in Bay Area, supporting overall fleet scaling momentum across US markets.",
     "captured_at": "2026-04-23T11:29:02+00:00"
   },
   {
