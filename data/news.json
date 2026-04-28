@@ -117,6 +117,15 @@
     "captured_at": "2026-04-26T15:47:02+00:00"
   },
   {
+    "date": "2026-04-19",
+    "title": "Tesla Activates Unsupervised Robotaxi in Dallas and Houston with Minimal Initial Coverage",
+    "url": "https://www.goodcarbadcar.net/tesla-q1-2026-earnings-hardware-3-fsd-robotaxi-capex-td-cowen/",
+    "summary": "Two days before Q1 earnings, Tesla activated unsupervised robotaxi service in Dallas and Houston with extremely limited initial geofences: approximately 25 square miles in Houston and 30-35 square miles in Dallas, with only 0-2% availability and one vehicle operating in Dallas, two in Houston.",
+    "impact_score": -1,
+    "impact_reason": "Mildly negative: while marking formal unsupervised launch in two new markets, the minimal fleet size and geofence coverage demonstrate that scaling velocity remains extremely constrained despite geographic expansion.",
+    "captured_at": "2026-04-28T15:29:44+00:00"
+  },
+  {
     "date": "2026-04-18",
     "title": "Tesla Expands Unsupervised Robotaxi to Dallas and Houston",
     "url": "https://www.teslarati.com/tesla-expands-unsupervised-robotaxi-service-two-new-cities/",
